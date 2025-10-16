@@ -1,0 +1,60 @@
+tibco_analyze_task:
+  description: >
+    Analyze the provided tibco business events and business works project focussing on understanding the 
+    business logic, integration points, process, adapters, error handling, components, configuration, 
+    event processing and rule engine. Compile a detailted analysis outcome with these, specifically how 
+    they can be used and leveraged in a Tibco to Java 21 Spring boot 3.1.3 migration.
+  expected_output: >
+    A detailted analysis outcome capturing all the Tibco project's  business logic, integration points, 
+    process, adapters, error handling, components, configuration, event processing and rule engine such that
+    these outcomes are directly used for creating Java Springboot application that exactly mimics tibco project.
+
+create_spring_boot_task:
+  description: >
+    Create a Java 21 based Spring boot 3.1.3 based application incorporating all the business flows of tibco project.
+    The created spring boot app should have end to end implmentation of all the business logics,
+    database configuration, unit tests compilation, file opeations, pub sub, queues, batch processing, etc.. as required.
+    Edit and refine the springboot app as needed to ensure for correctness to mimic given tibco project.
+    Use lombok annotations, sl4j for logging, have inline/todo comments.
+    Must ensure the spring boot app mimics exactly given tibco business works and business events project with complete implementation in java springboot.
+
+    The bash script will have these components:
+    1. A command to create the directories where the source code will reside.
+    2. A pom.xml file for building the spring boot project, including the required spring boot dependencies.
+    3. A java class that contains all the spring boot logic, including rest controllers, entities and the logic for implementing the business rules with a tiered architecture and solid principles in mind. 
+    4. An application.properties file with the basic spring boot configuration.
+    5. A maven command to compile and execute the project.
+
+    The project must implement similar logic as described in the provided TIBCO BusinessEvents project description.
+
+    Make sure to follow these guidelines when generating the code:
+    - Use a clear and readable coding style, including log messages to follow the execution flow
+    - When creating the java classes, use lombok annotations when possible.
+    - Be sure to use correct bash syntax and multiline string handling using `cat << 'EOF' > file`
+    - The created java project must replicate the TIBCO Business Events logic and TIBCO Business Works
+    - The Created java project must follow the tiered architecture and adhere to solid principles. 
+    - The Createe java project must follow solid principles, tiered architecture, java coding standards and seperation of concern. 
+    - The created java project must have complete implementation and ensure that it is the exact replacement of the given tibco project.
+    - Reiterate the requirements and ensure that the bash script created is accurate, that the Spring Boot application is compiled without any errors, and has unit tests.
+    - Do not include comments that are not related to the generation. Do not include usage examples.
+  expected_output: >
+    A Springboot app that has been migrated from given tibco project that mimics end to end functionalities as a bash script with a feedback to improve them.
+
+review_and_edit_spring_boot_task:
+  description: >
+    Review the created spring boot app and check for compilation errors, end to end implmentation of all business logics,
+    database configuration, unit tests compilation, file opeations, pub sub, queues, batch processing, etc.. as required.
+    Edit and refine the springboot app as needed to ensure for correctness and should mimic given tibco project.
+
+  expected_output: >
+    A full fledged, error-free Java Spring boot app that prefectly mimics the tibco project. Feedback on potential improvements.
+    The output should be in the form of bash script that, when executed, will generate a complete Spring Boot project with all 
+    the necessary files (pom.xml, java classes, properties file) and a script that will compile and run the project. 
+
+    The bash script will have these components:
+    1. A command to create the directories where the source code will reside.
+    2. A pom.xml file for building the spring boot project, including the required spring boot dependencies.
+    3. A java class that contains all the spring boot logic, including rest controllers, entities and the logic for implementing the business rules with a tiered architecture and solid principles in mind. 
+    4. An application.properties file with the basic spring boot configuration.
+    5. A maven command to compile and execute the project. 
+    6. Be sure to use correct bash syntax and multiline string handling using `cat << 'EOF' > file

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="SimpleProcess">
+    <input name="InputMessage">
+        <schema>
+            <element name="InputData">
+                <element name="Name" type="string"/>
+                <element name="Age" type="int"/>
+            </element>
+        </schema>
+    </input>
+
+    <output name="OutputMessage">
+        <schema>
+            <element name="OutputData">
+                <element name="Message" type="string"/>
+            </element>
+        </schema>
+    </output>
+
+    <activities>
+        <!-- Receive Activity to get InputMessage -->
+        <receive name="ReceiveInput" port="InputPort" operation="ReceiveOperation" message="InputMessage"/>
+
+        <!-- Assign Activity to create a personalized message -->
+        <assign name="AssignMessage">
+            <expression>
+                <Message>
+                    <![CDATA[
+                    "Hello " + InputMessage.InputData.Name + ", you are " + string(InputMessage.InputData.Age) + " years old."
+                    ]]>
+                </Message>
+            </expression>
+        </assign>
+
+        <!-- Reply Activity to return OutputMessage -->
+        <reply name="SendResponse" port="OutputPort" operation="SendOperation" message="OutputMessage"/>
+
+    </activities>
+
+    <ports>
+        <port name="InputPort" type="RequestResponse" interface="InputInterface"/>
+        <port name="OutputPort" type="RequestResponse" interface="OutputInterface"/>
+    </ports>
+
+</process>

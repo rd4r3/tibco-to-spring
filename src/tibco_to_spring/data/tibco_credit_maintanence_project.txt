@@ -1,0 +1,321 @@
+Directory Tree:
+Gen AI/
+│   ├── Sample_CREDIT_MAINTENANCE.zip
+│   ├── Sample_CREDIT_MAINTENANCE/
+│   │   ├── Sample_CREDIT_MAINTENANCE/
+│   │   │   ├── .folder
+│   │   │   ├── README.txt
+│   │   │   ├── vcrepo.dat
+│   │   │   ├── AESchemas/
+│   │   │   │   ├── .folder
+│   │   │   │   ├── ae.aeschema
+│   │   │   │   ├── corba.aeschema
+│   │   │   │   ├── java.aeschema
+│   │   │   │   ├── sql.aeschema
+│   │   │   │   ├── ae/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── baseDocument.aeschema
+│   │   │   ├── defaultVars/
+│   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── AppSecurity/
+│   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── BWCommon/
+│   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── CC2_BH_IN_Credit_Maintenance/
+│   │   │   │   │   ├── Common/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── BusinessProperties/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── JMSProperties/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── Constant/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── FeedDetail/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── Common/
+│   │   │   │   │   ├── CommonLE/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── BusinessKeys/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── MacysCC2Common/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── NewToOldCanonical/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── Connections/
+│   │   │   │   │   ├── Database/
+│   │   │   │   │   │   ├── CC2CLOUDJDBCConnection/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── CC2ODSJDBCConnection/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── JMS/
+│   │   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── CC2BHINJMSConnection/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── Destinations/
+│   │   │   │   │   ├── Queues/
+│   │   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── InboundInterfaces-Credit/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── SampleBatchInterface/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── Topics/
+│   │   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── Environment/
+│   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── SystemConstants/
+│   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   ├── AssociationMarker/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── BatchName/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── Default/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── ErrorMessage/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── Status/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── StatusID/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── SystemBusinessProperty/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── CLE/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── AuditDetails/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   ├── ExceptionCode/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── ExceptionMessage/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── LogLevel/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   ├── LogLevelNum/
+│   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── TemplateSettings/
+│   │   │   │   │   ├── SampleBatchInterface/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── SampleBatchTriggerInterface/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   ├── Tuning/
+│   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── CLEBWClient/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── Connections/
+│   │   │   │   │   │   ├── Database/
+│   │   │   │   │   │   │   ├── JDBCQuery/
+│   │   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   │   ├── JDBCStoredProc/
+│   │   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   │   │   ├── JDBCUpdate/
+│   │   │   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   │   │   ├── SampleBatchInterface/
+│   │   │   │   │   │   ├── defaultVars.substvar
+│   │   │   ├── Deployments/
+│   │   │   │   ├── .folder
+│   │   │   │   ├── BH_IN_CREDIT_MAINTENANCE.archive
+│   │   │   ├── Processes/
+│   │   │   │   ├── .folder
+│   │   │   │   ├── CreditMaintenanceProcess/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── StarterProcesses/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── CREDIT_MAINTENANCE_WORKER.process
+│   │   │   │   │   │   ├── Trigger Worker Process.process
+│   │   │   │   │   ├── SubProcesses/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── CreditToCloud.process
+│   │   │   │   │   │   ├── WriteToErrorFile.process
+│   │   │   │   │   │   ├── WriteToReprocessFile.process
+│   │   │   │   ├── Schemas/
+│   │   │   │   │   ├── .folder
+│   │   │   │   ├── UnitTest/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── ReprocessToCloud-UnitTest.process
+│   │   │   │   │   ├── TestReceiveError.process
+│   │   │   ├── Services/
+│   │   │   │   ├── .folder
+│   │   │   ├── SharedResources/
+│   │   │   │   ├── .folder
+│   │   │   │   ├── Connections/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── Database/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── CC2CLOUDJDBCConnection.sharedjdbc
+│   │   │   │   │   │   ├── CC2ODSJDBCConnection.sharedjdbc
+│   │   │   │   │   ├── JMS/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── BatchFrameworkJMSConnection.sharedjmscon
+│   │   │   │   │   │   ├── CC2BHINJMSConnection.sharedjmscon
+│   │   │   │   │   │   ├── CLEJMSConnection.sharedjmscon
+│   │   │   │   │   │   ├── LogLevelProperties.sharedjmsapp
+│   │   │   │   ├── CustomFunctions/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── AcctCreditDivUtilities.javaxpath
+│   │   │   │   │   ├── GetMilliSeconds.javaxpath
+│   │   │   │   ├── DataFormats/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── CC1_Credit_Maintenance-FF.sharedparse
+│   │   │   │   │   ├── CC1_Credit_Maintenance.sharedparse
+│   │   │   │   │   ├── CC2_Credit_Maintenance-FF.sharedparse
+│   │   │   │   │   ├── CC2_Credit_Maintenance.sharedparse
+│   │   │   │   │   ├── CC2_Credit_Maintenance_Error.sharedparse
+│   │   │   │   │   ├── CC2_Credit_Maintenance_File.sharedparse
+│   │   │   │   │   ├── CC2_Credit_Maintenance_HeaderTS.sharedparse
+│   │   │   │   ├── JMSAppProperties/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── CC2InboundCredit.sharedjmsapp
+│   │   │   │   │   ├── CC_CONVERSION_OtherProperties.sharedjmsapp
+│   │   │   │   │   ├── UpdateMIGRecords.sharedjmsapp
+│   │   │   │   ├── JMSProperties/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── CC2InboundCommon.sharedjmsapp
+│   │   │   │   ├── Libraries/
+│   │   │   │   │   ├── .folder
+│   │   │   │   ├── Schemas/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── BatchFrameworkSchema.xsd
+│   │   │   │   │   │   ├── BatchInterfaceSchema.xsd
+│   │   │   │   │   │   ├── CommonSchema.xsd
+│   │   │   │   │   ├── CC2.Common/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── CC2Common_v1_0.xsd
+│   │   │   │   │   │   ├── CusCommon.xsd
+│   │   │   │   │   │   ├── CusMetricsCommon.xsd
+│   │   │   │   │   │   ├── CusPrefsCommon.xsd
+│   │   │   │   │   │   ├── MacysCommon.xsd
+│   │   │   │   │   │   ├── TxnCommon.xsd
+│   │   │   │   │   ├── CC2.Maintenance/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── CC2.MaintenanceCloud_v_1_0.xsd
+│   │   │   │   │   │   ├── CC2.MaintenanceCloud_v_2_0.xsd
+│   │   │   │   │   │   ├── CC2.Maintenance_v1_0.xsd
+│   │   │   │   │   ├── CLE2007/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── ExceptionRequestError.xsd
+│   │   │   │   │   │   ├── LogRequestError.xsd
+│   │   │   │   │   │   ├── Common/
+│   │   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   │   ├── CustomerRequestHeader.xsd
+│   │   │   │   │   │   │   ├── RequestHeader.xsd
+│   │   │   │   │   │   ├── Exception/
+│   │   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   │   ├── CustomerExceptionRequest.xsd
+│   │   │   │   │   │   │   ├── ExceptionRequest.xsd
+│   │   │   │   │   │   │   ├── ResolutionReply.xsd
+│   │   │   │   │   │   ├── Logging/
+│   │   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   │   ├── CustomerLogRequest.xsd
+│   │   │   │   │   │   │   ├── LogRequest.xsd
+│   │   │   │   │   ├── CLEExtension/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── LogLevelReply.xsd
+│   │   │   │   │   │   ├── LogLevelRequest.xsd
+│   │   │   │   │   ├── CreditSchema/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── Data Format.sharedparse
+│   │   │   │   │   │   ├── PIDRequest.xsd
+│   │   │   │   │   │   ├── PIDResponse.xsd
+│   │   │   │   │   │   ├── Schema.xsd
+│   │   │   │   ├── SharedVariables/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── CLEHeader.jobsharedvariable
+│   │   │   │   │   ├── CLELogLevel.sharedvariable
+│   │   │   │   │   ├── BAFBWClient/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── JobStatusSharedVariable.sharedvariable
+│   │   │   ├── UtilityServices/
+│   │   │   │   ├── .folder
+│   │   │   │   ├── CustomFunctions/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── GUID CustomFunctions.javaxpath
+│   │   │   │   │   ├── BWCommon/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── BWCommonJavaCustomFunctions.javaxpath
+│   │   │   │   ├── LoggingAndExceptions/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── CLEGetContext.process
+│   │   │   │   │   ├── CLESendExceptionRequestJms.process
+│   │   │   │   │   ├── CLESendLogRequestJms.process
+│   │   │   │   │   ├── CLESetContext.process
+│   │   │   │   │   ├── GetMergedHeader.process
+│   │   │   │   │   ├── LogAndNotify_ExceptionRequestSendFailure.process
+│   │   │   │   │   ├── LogAndNotify_LogRequestSendFailure.process
+│   │   │   │   ├── UtilityServices/
+│   │   │   │   │   ├── .folder
+│   │   │   │   │   ├── CustomFunctions/
+│   │   │   │   │   │   ├── .folder
+│   │   │   │   │   │   ├── GUID CustomFunctions.javaxpath
+
+
+
+
+# ======================
+# File: Sample_CREDIT_MAINTENANCE\Sample_CREDIT_MAINTENANCE\vcrepo.dat
+# ======================
+
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="SimpleProcess">
+    <input name="InputMessage">
+        <schema>
+            <element name="InputData">
+                <element name="Name" type="string"/>
+                <element name="Age" type="int"/>
+            </element>
+        </schema>
+    </input>
+
+    <output name="OutputMessage">
+        <schema>
+            <element name="OutputData">
+                <element name="Message" type="string"/>
+            </element>
+        </schema>
+    </output>
+
+    <activities>
+        <!-- Receive Activity to get InputMessage -->
+        <receive name="ReceiveInput" port="InputPort" operation="ReceiveOperation" message="InputMessage"/>
+
+        <!-- Assign Activity to create a personalized message -->
+        <assign name="AssignMessage">
+            <expression>
+                <Message>
+                    <![CDATA[
+                    "Hello " + InputMessage.InputData.Name + ", you are " + string(InputMessage.InputData.Age) + " years old."
+                    ]]>
+                </Message>
+            </expression>
+        </assign>
+
+        <!-- Reply Activity to return OutputMessage -->
+        <reply name="SendResponse" port="OutputPort" operation="SendOperation" message="OutputMessage"/>
+
+    </activities>
+
+    <ports>
+        <port name="InputPort" type="RequestResponse" interface="InputInterface"/>
+        <port name="OutputPort" type="RequestResponse" interface="OutputInterface"/>
+    </ports>
+
+</process>
