@@ -5,10 +5,10 @@ from typing import List, Optional
 from sentence_transformers import SentenceTransformer
 from crewai.memory.storage.interface import Storage
 
+CREW_MEMORY_PATH = "src/tibco_to_spring/crew_memory.db"
 
 class LocalVectorMemory(Storage):
-    def __init__(self, db_path="crew_memory.db", embedding_model="all-MiniLM-L6-v2"):
-        self.db_path = db_path
+    def __init__(self, db_path=CREW_MEMORY_PATH, embedding_model="all-MiniLM-L6-v2"):
         self.conn = sqlite3.connect(db_path)
         self._init_tables()
         self.model = SentenceTransformer(embedding_model)

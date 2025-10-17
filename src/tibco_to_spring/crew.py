@@ -1,16 +1,11 @@
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import FileReadTool
-from pathlib import Path
-from pydantic import BaseModel, Field, validator
+from crewai_tools import FileReadTool, DirectoryReadTool
 import json
 import os
 import re
 import time
 from functools import wraps
-from tibco_to_spring.tools.custom_tool import MyCustomTool
-from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
-from crewai_tools import SerperDevTool
 from tibco_to_spring.local_vector_memory import LocalVectorMemory
 from crewai.memory.external.external_memory import ExternalMemory
 
@@ -18,8 +13,6 @@ from crewai.memory.external.external_memory import ExternalMemory
 @CrewBase
 class TibcoToSpring():
 	"""TibcoToSpring crew"""
-
-	DB_ROOT_PATH = "src/tibco_to_spring/.db"
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 	# Simple cache for LLM responses
@@ -50,51 +43,47 @@ class TibcoToSpring():
 		return llm_instance(*args, **kwargs)
 
 	llm = LLM(
-		model="mistral/codestral-2501",
-		# model="mistral/mistral-medium-latest",
+		# model="mistral/codestral-2501",
+		model="mistral/mistral-large-latest",
 		temperature=0.7,
 		cache=llm_cache  # Enable caching
 	)
-	file_read_tool = FileReadTool(
-		file_path=Path('src/tibco_to_spring/data/tibco_credit_maintanence_project.txt'),
-		description='A tool to read the tibco project file.'
-	)
-
+	dir_tool = DirectoryReadTool(directory='src/tibco_to_spring/data')
+	file_tool = FileReadTool()
 	memory = ExternalMemory(storage=LocalVectorMemory())
 
 	@agent
-	def tibco_analyze_agent(self) -> Agent:
+	def tibco_analyst(self) -> Agent:
 		return Agent(
-			config=self.agents_config['tibco_analyze_agent'],
-			tools=[self.file_read_tool],
+			config=self.agents_config['tibco_analyst'],
+			tools=[self.dir_tool, self.file_tool],
 			llm=self.llm,
 			verbose=True,
 			allow_delegation=False
 		)
 
 	@agent
-	def java_architect_agent(self) -> Agent:
+	def java_architect(self) -> Agent:
 		return Agent(
-			config=self.agents_config['java_architect_agent'],
+			config=self.agents_config['java_architect'],
 			verbose=True,
 			llm=self.llm,
 			allow_delegation=False
 		)
 
 	@task
-	def tibco_analyze_task(self) -> Task:
+	def analyze_tibco(self) -> Task:
 		return Task(
-			config=self.tasks_config['tibco_analyze_task'],
-			tools=[self.file_read_tool],
-			agent=self.tibco_analyze_agent()
+			config=self.tasks_config['analyze_tibco'],
+			agent=self.tibco_analyst()
 		)
 
 	@task
-	def create_spring_boot_task(self) -> Task:
+	def create_spring_boot(self) -> Task:
 		return Task(
-			config=self.tasks_config['create_spring_boot_task'],
-			agent=self.java_architect_agent(),
-			context=[self.tibco_analyze_task()]
+			config=self.tasks_config['create_spring_boot'],
+			agent=self.java_architect(),
+			context=[self.analyze_tibco()]
 		)
 
 	@crew

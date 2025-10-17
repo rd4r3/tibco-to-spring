@@ -9,26 +9,18 @@ from tibco_to_spring.crew import TibcoToSpring
 
 # Constants
 OUTPUT_DIR = Path("outputs")
-SPRING_BOOT_DIR = OUTPUT_DIR / "springBootProject"
-BASH_FILE = SPRING_BOOT_DIR / "bash_script.sh"
+BASH_FILE = OUTPUT_DIR / "bash_script.sh"
 # FEEDBACK_FILE = OUTPUT_DIR / "feedback.json"
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-def run() -> bool:
-    """
-    Run the TibcoToSpring crew and process the output.
-
-    Returns:
-        bool: True if successful, raises exception otherwise
-    """
+def run() -> None:
     try:
         # Get crew output
         crew_output = TibcoToSpring().crew().kickoff()
 
          # Ensure output directories exist
         OUTPUT_DIR.mkdir(exist_ok=True)
-        SPRING_BOOT_DIR.mkdir(exist_ok=True)
 
         # Write bash script to the springBootProject directory
         BASH_FILE.write_text(crew_output.raw, encoding="utf-8")
@@ -36,7 +28,6 @@ def run() -> bool:
             BASH_FILE.chmod(BASH_FILE.stat().st_mode | 0o755)
 
         print(f"Files created successfully in {OUTPUT_DIR.absolute()}")
-        return True
 
     except KeyError as e:
         raise ValueError(f"Missing required field in crew output: {e}")

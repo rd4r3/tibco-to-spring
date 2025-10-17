@@ -20,7 +20,7 @@ crewai install
 ```
 ### Customizing
 
-**Add your `XX_API_KEY` into the `.env` file**
+**Add your `MISTRAL_API_KEY` into the `.env` file**
 
 - Modify `src/tibco_to_spring/config/agents.yaml` to define your agents
 - Modify `src/tibco_to_spring/config/tasks.yaml` to define your tasks
@@ -37,7 +37,7 @@ $ crewai run
 
 This command initializes the tibco-to-spring Crew, assembling the agents and assigning them tasks as defined in your configuration.
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+The program creates a bash_script in outuputs which can be used to generate a complete SpringBoot project.
 
 ## Understanding Your Crew
 
