@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="EnrichedTransaction">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Transaction">
+                    <xs:sequence>
+                        <xs:element name="customerName" type="xs:string"/>
+                        <xs:element name="customerId" type="xs:string"/>
+                        <xs:element name="riskScore" type="xs:decimal"/>
+                        <xs:element name="processingStatus" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routingRules>
+    <rule>
+        <condition>transaction.amount > 10000</condition>
+        <action>routeToHighValueQueue</action>
+    </rule>
+    <rule>
+        <condition>transaction.riskScore > 0.75</condition>
+        <action>routeToFraudReview</action>
+    </rule>
+    <rule>
+        <condition>transaction.currency = 'USD'</condition>
+        <action>routeToUsdProcessor</action>
+    </rule>
+    <defaultAction>routeToStandardQueue</defaultAction>
+</routingRules>

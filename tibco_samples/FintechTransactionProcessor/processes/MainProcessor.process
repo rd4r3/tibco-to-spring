@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>MainProcessor</name>
+    <description>Main process for handling fintech transactions</description>
+    <activities>
+        <activity name="ValidateTransaction" type="ProcessCall">
+            <processName>ValidateTransaction</processName>
+        </activity>
+        <activity name="EnrichTransaction" type="ProcessCall">
+            <processName>EnrichTransaction</processName>
+        </activity>
+        <activity name="PersistTransaction" type="ProcessCall">
+            <processName>PersistTransaction</processName>
+        </activity>
+    </activities>
+    <errorHandler>
+        <processName>ErrorHandler</processName>
+    </errorHandler>
+</process>
