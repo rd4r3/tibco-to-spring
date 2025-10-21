@@ -1,0 +1,25 @@
+[project]
+name = "tibco_to_spring"
+version = "0.1.0"
+description = "tibco-to-spring using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<=3.13"
+dependencies = [
+    "crewai[tools]>=0.85.0,<1.0.0",
+    "langchain-core>=0.1.35",
+    "sentence-transformers>=2.6.1",
+    "faiss-cpu>=1.7.4",
+    "numpy>=1.26.0"
+]
+
+[project.scripts]
+tibco_to_spring = "tibco_to_spring.main:run"
+run_crew = "tibco_to_spring.main:run"
+train = "tibco_to_spring.main:train"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

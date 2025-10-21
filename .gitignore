@@ -1,0 +1,4 @@
+.env
+__pycache__/
+crew_memory.db
+src/tibco_to_spring/.db/tibco_to_spring.db

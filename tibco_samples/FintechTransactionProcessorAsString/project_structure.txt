@@ -1,0 +1,312 @@
+# FintechTransactionProcessor Project Structure
+
+## Directory Structure
+```
+FintechTransactionProcessor/
+├── processes/
+│   ├── MainProcessor.process
+│   ├── ValidateTransaction.process
+│   ├── EnrichTransaction.process
+│   ├── PersistTransaction.process
+│   └── ErrorHandler.process
+├── schemas/
+│   ├── Transaction.xsd
+│   ├── EnrichedTransaction.xsd
+│   └── ErrorPayload.xsd
+├── wsdl/
+│   └── TransactionService.wsdl
+├── resources/
+│   ├── config.properties
+│   └── routingRules.xml
+└── project.xml
+```
+
+## File Contents
+
+### processes/MainProcessor.process
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>MainProcessor</name>
+    <description>Main process for handling fintech transactions</description>
+    <activities>
+        <activity name="ValidateTransaction" type="ProcessCall">
+            <processName>ValidateTransaction</processName>
+        </activity>
+        <activity name="EnrichTransaction" type="ProcessCall">
+            <processName>EnrichTransaction</processName>
+        </activity>
+        <activity name="PersistTransaction" type="ProcessCall">
+            <processName>PersistTransaction</processName>
+        </activity>
+    </activities>
+    <errorHandler>
+        <processName>ErrorHandler</processName>
+    </errorHandler>
+</process>
+```
+
+### processes/ValidateTransaction.process
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>ValidateTransaction</name>
+    <description>Process to validate incoming transactions</description>
+    <activities>
+        <activity name="ValidateSchema" type="SchemaValidation">
+            <schema>Transaction.xsd</schema>
+        </activity>
+        <activity name="CheckBusinessRules" type="JavaMethod">
+            <method>com.fintech.ValidationRules.validate</method>
+        </activity>
+    </activities>
+</process>
+```
+
+### processes/EnrichTransaction.process
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>EnrichTransaction</name>
+    <description>Process to enrich transaction data</description>
+    <activities>
+        <activity name="AddCustomerData" type="JavaMethod">
+            <method>com.fintech.EnrichmentService.addCustomerData</method>
+        </activity>
+        <activity name="CalculateRiskScore" type="JavaMethod">
+            <method>com.fintech.RiskEngine.calculateScore</method>
+        </activity>
+        <activity name="TransformToEnriched" type="XSLTTransformation">
+            <stylesheet>enrichment.xsl</stylesheet>
+        </activity>
+    </activities>
+</process>
+```
+
+### processes/PersistTransaction.process
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>PersistTransaction</name>
+    <description>Process to persist transaction data</description>
+    <activities>
+        <activity name="FormatForDatabase" type="XSLTTransformation">
+            <stylesheet>databaseFormat.xsl</stylesheet>
+        </activity>
+        <activity name="WriteToDatabase" type="JDBCUpdate">
+            <sql>INSERT INTO transactions (id, amount, customer_id, risk_score) VALUES (?, ?, ?, ?)</sql>
+        </activity>
+    </activities>
+</process>
+```
+
+### processes/ErrorHandler.process
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>ErrorHandler</name>
+    <description>Global error handler for transaction processing</description>
+    <activities>
+        <activity name="LogError" type="JavaMethod">
+            <method>com.fintech.ErrorLogger.log</method>
+        </activity>
+        <activity name="NotifySupport" type="Email">
+            <to>support@fintech.com</to>
+            <subject>Transaction Processing Error</subject>
+            <body>An error occurred during transaction processing: ${error.message}</body>
+        </activity>
+        <activity name="FormatErrorResponse" type="XSLTTransformation">
+            <stylesheet>errorResponse.xsl</stylesheet>
+        </activity>
+    </activities>
+</process>
+```
+
+### schemas/Transaction.xsd
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Transaction">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="transactionId" type="xs:string"/>
+                <xs:element name="amount" type="xs:decimal"/>
+                <xs:element name="currency" type="xs:string"/>
+                <xs:element name="timestamp" type="xs:dateTime"/>
+                <xs:element name="sourceAccount" type="xs:string"/>
+                <xs:element name="destinationAccount" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+```
+
+### schemas/EnrichedTransaction.xsd
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="EnrichedTransaction">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="Transaction">
+                    <xs:sequence>
+                        <xs:element name="customerName" type="xs:string"/>
+                        <xs:element name="customerId" type="xs:string"/>
+                        <xs:element name="riskScore" type="xs:decimal"/>
+                        <xs:element name="processingStatus" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+```
+
+### schemas/ErrorPayload.xsd
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="ErrorPayload">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="errorCode" type="xs:string"/>
+                <xs:element name="errorMessage" type="xs:string"/>
+                <xs:element name="transactionId" type="xs:string"/>
+                <xs:element name="timestamp" type="xs:dateTime"/>
+                <xs:element name="details" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+```
+
+### wsdl/TransactionService.wsdl
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+           xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+           xmlns:tns="http://fintech.com/transaction"
+           targetNamespace="http://fintech.com/transaction">
+
+    <types>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  targetNamespace="http://fintech.com/transaction">
+            <xs:import namespace="http://fintech.com/transaction"
+                      schemaLocation="../schemas/Transaction.xsd"/>
+            <xs:import namespace="http://fintech.com/transaction"
+                      schemaLocation="../schemas/EnrichedTransaction.xsd"/>
+            <xs:import namespace="http://fintech.com/transaction"
+                      schemaLocation="../schemas/ErrorPayload.xsd"/>
+        </xs:schema>
+    </types>
+
+    <message name="ProcessTransactionRequest">
+        <part name="transaction" element="tns:Transaction"/>
+    </message>
+
+    <message name="ProcessTransactionResponse">
+        <part name="enrichedTransaction" element="tns:EnrichedTransaction"/>
+    </message>
+
+    <message name="ErrorResponse">
+        <part name="error" element="tns:ErrorPayload"/>
+    </message>
+
+    <portType name="TransactionService">
+        <operation name="processTransaction">
+            <input message="tns:ProcessTransactionRequest"/>
+            <output message="tns:ProcessTransactionResponse"/>
+            <fault name="error" message="tns:ErrorResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="TransactionServiceBinding" type="tns:TransactionService">
+        <soap:binding style="document"
+                     transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="processTransaction">
+            <soap:operation soapAction="http://fintech.com/transaction/processTransaction"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="error">
+                <soap:fault name="error" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+
+    <service name="TransactionService">
+        <port name="TransactionServicePort" binding="tns:TransactionServiceBinding">
+            <soap:address location="http://localhost:8080/transactionService"/>
+        </port>
+    </service>
+
+</definitions>
+```
+
+### resources/config.properties
+```
+# Database Configuration
+db.url=jdbc:mysql://localhost:3306/fintech_db
+db.username=fintech_user
+db.password=securepassword123
+
+# Transaction Processing
+transaction.timeout=30000
+transaction.maxRetries=3
+
+# Logging
+log.level=INFO
+log.file=logs/transaction.log
+
+# Email Notifications
+email.smtp.host=smtp.fintech.com
+email.smtp.port=587
+email.support.address=support@fintech.com
+```
+
+### resources/routingRules.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<routingRules>
+    <rule>
+        <condition>transaction.amount > 10000</condition>
+        <action>routeToHighValueQueue</action>
+    </rule>
+    <rule>
+        <condition>transaction.riskScore > 0.75</condition>
+        <action>routeToFraudReview</action>
+    </rule>
+    <rule>
+        <condition>transaction.currency = 'USD'</condition>
+        <action>routeToUsdProcessor</action>
+    </rule>
+    <defaultAction>routeToStandardQueue</defaultAction>
+</routingRules>
+```
+
+### project.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>FintechTransactionProcessor</name>
+    <description>TIBCO BW project for processing fintech transactions</description>
+    <version>1.0.0</version>
+    <dependencies>
+        <dependency>TIBCO-BW-6.5.0</dependency>
+        <dependency>TIBCO-BW-JDBC-6.5.0</dependency>
+        <dependency>TIBCO-BW-XML-6.5.0</dependency>
+    </dependencies>
+    <modules>
+        <module>processes</module>
+        <module>schemas</module>
+        <module>wsdl</module>
+        <module>resources</module>
+    </modules>
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <outputDirectory>build</outputDirectory>
+    </build>
+</project>

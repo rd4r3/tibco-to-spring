@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>ValidateTransaction</name>
+    <description>Process to validate incoming transactions</description>
+    <activities>
+        <activity name="ValidateSchema" type="SchemaValidation">
+            <schema>Transaction.xsd</schema>
+        </activity>
+        <activity name="CheckBusinessRules" type="JavaMethod">
+            <method>com.fintech.ValidationRules.validate</method>
+        </activity>
+    </activities>
+</process>

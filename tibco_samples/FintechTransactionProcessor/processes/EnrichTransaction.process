@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>EnrichTransaction</name>
+    <description>Process to enrich transaction data</description>
+    <activities>
+        <activity name="AddCustomerData" type="JavaMethod">
+            <method>com.fintech.EnrichmentService.addCustomerData</method>
+        </activity>
+        <activity name="CalculateRiskScore" type="JavaMethod">
+            <method>com.fintech.RiskEngine.calculateScore</method>
+        </activity>
+        <activity name="TransformToEnriched" type="XSLTTransformation">
+            <stylesheet>enrichment.xsl</stylesheet>
+        </activity>
+    </activities>
+</process>
