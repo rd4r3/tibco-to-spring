@@ -1,342 +1,52 @@
-### Overview
-
-This document provides a comprehensive guide to developing a Java 25 and Spring Boot 3.5.0 application that replicates the complete business logic, workflows, and integration patterns of the provided TIBCO BusinessWorks and BusinessEvents project. The application will include features such as database configuration, structured logging, exception handling, Drools rule engine integration, unit testing, file operations, GCP Pub/Sub listeners and publishers, and batch processing. The solution will follow SOLID principles, use a layered architecture, and include full unit test coverage for all components.
-
-### Directory Structure
-
-```bash
-# Create the project directory structure
-mkdir -p tibco-migration-project/{src/main/java/com/example/tibcomigration,src/main/resources,src/test/java/com/example/tibcomigration,src/test/resources}
-```
-
-### Maven `pom.xml`
-
-```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example</groupId>
-    <artifactId>tibco-migration-project</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <java.version>25</java.version>
-        <spring.boot.version>3.5.0</spring.boot.version>
-    </properties>
-
-    <dependencies>
-        <!-- Spring Boot Starter Dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-batch</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-gcp-starter-pubsub</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-spring</artifactId>
-            <version>7.67.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-```
-
-### Java Codebase
-
-#### REST Controllers
-
-```java
-package com.example.tibcomigration.controller;
-
-import com.example.tibcomigration.service.CreditMaintenanceService;
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/api/credit")
-@RequiredArgsConstructor
-public class CreditController {
-
-    private final CreditMaintenanceService creditMaintenanceService;
-
-    @PostMapping("/process")
-    public CreditResponseDTO processCredit(@RequestBody CreditRequestDTO request) {
-        return creditMaintenanceService.processCredit(request);
-    }
-}
-```
-
-#### Service Classes
-
-```java
-package com.example.tibcomigration.service;
-
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import com.example.tibcomigration.repository.CreditRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-@Service
-@RequiredArgsConstructor
-public class CreditMaintenanceService {
-
-    private final CreditRepository creditRepository;
-
-    public CreditResponseDTO processCredit(CreditRequestDTO request) {
-        // Business logic implementation
-        // TODO: Implement business logic based on TIBCO processes
-        return new CreditResponseDTO("Processed successfully");
-    }
-}
-```
-
-#### Repositories
-
-```java
-package com.example.tibcomigration.repository;
-
-import com.example.tibcomigration.entity.CreditEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface CreditRepository extends JpaRepository<CreditEntity, Long> {
-}
-```
-
-#### DTOs/Entities
-
-```java
-package com.example.tibcomigration.dto;
-
-import lombok.Data;
-
-@Data
-public class CreditRequestDTO {
-    private String name;
-    private int age;
-}
-
-@Data
-public class CreditResponseDTO {
-    private String message;
-
-    public CreditResponseDTO(String message) {
-        this.message = message;
-    }
-}
-
-package com.example.tibcomigration.entity;
-
-import lombok.Data;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
-@Data
-public class CreditEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private int age;
-}
-```
-
-#### Business Logic Layers
-
-```java
-package com.example.tibcomigration.service;
-
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import com.example.tibcomigration.repository.CreditRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-@Service
-@RequiredArgsConstructor
-public class CreditMaintenanceService {
-
-    private final CreditRepository creditRepository;
-
-    public CreditResponseDTO processCredit(CreditRequestDTO request) {
-        // Business logic implementation
-        // TODO: Implement business logic based on TIBCO processes
-        return new CreditResponseDTO("Processed successfully");
-    }
-}
-```
-
-#### Unit Tests
-
-```java
-package com.example.tibcomigration.service;
-
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import com.example.tibcomigration.repository.CreditRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
-@ExtendWith(MockitoExtension.class)
-public class CreditMaintenanceServiceTest {
-
-    @Mock
-    private CreditRepository creditRepository;
-
-    @InjectMocks
-    private CreditMaintenanceService creditMaintenanceService;
-
-    @Test
-    public void testProcessCredit() {
-        CreditRequestDTO request = new CreditRequestDTO();
-        request.setName("John Doe");
-        request.setAge(30);
-
-        CreditResponseDTO expectedResponse = new CreditResponseDTO("Processed successfully");
-
-        // Mock repository behavior if needed
-        // when(creditRepository.someMethod()).thenReturn(someValue);
-
-        CreditResponseDTO response = creditMaintenanceService.processCredit(request);
-
-        assertEquals(expectedResponse.getMessage(), response.getMessage());
-    }
-}
-```
-
-### Configuration Files
-
-#### `application.properties`
-
-```properties
-# Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/tibco_db
-spring.datasource.username=root
-spring.datasource.password=password
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
-# Logging Configuration
-logging.level.root=INFO
-logging.level.com.example.tibcomigration=DEBUG
-
-# GCP Pub/Sub Configuration
-spring.cloud.gcp.project-id=your-gcp-project-id
-spring.cloud.gcp.pubsub.enabled=true
-spring.cloud.gcp.pubsub.subscription=your-subscription-name
-```
-
-### Build Commands
-
 ```bash
 #!/bin/bash
 
-# Logging setup
-exec > >(tee -a build.log) 2>&1
+# Logging function
+log() {
+    echo "[INFO] $1"
+}
 
-# Create project structure
-mkdir -p tibco-migration-project/{src/main/java/com/example/tibcomigration,src/main/resources,src/test/java/com/example/tibcomigration,src/test/resources}
+# Create directory structure
+log "Creating directory structure..."
+mkdir -p fintech-transaction-processor/src/{main,test}/{java/com/fintech,resources/{static,templates}}
+mkdir -p fintech-transaction-processor/src/{main,test}/resources/{config,drools}
+
+# Create package directories
+mkdir -p fintech-transaction-processor/src/main/java/com/fintech/{config,controller,service,repository,model,exception,listener,publisher,batch,util}
+mkdir -p fintech-transaction-processor/src/test/java/com/fintech/{controller,service,repository,listener,publisher,batch,util}
+
+# Create resource directories
+mkdir -p fintech-transaction-processor/src/main/resources/{schemas,transformations,logs}
 
 # Create pom.xml
-cat << 'EOF' > tibco-migration-project/pom.xml
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+log "Creating pom.xml..."
+cat << 'EOF' > fintech-transaction-processor/pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example</groupId>
-    <artifactId>tibco-migration-project</artifactId>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.fintech</groupId>
+    <artifactId>fintech-transaction-processor</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <name>Fintech Transaction Processor</name>
+    <description>Spring Boot application for processing fintech transactions</description>
 
     <properties>
         <java.version>25</java.version>
-        <spring.boot.version>3.5.0</spring.boot.version>
+        <drools.version>8.50.0.Final</drools.version>
+        <spring-cloud-gcp.version>4.6.0</spring-cloud-gcp.version>
+        <lombok.version>1.18.30</lombok.version>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Starter Dependencies -->
+        <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -347,62 +57,59 @@ cat << 'EOF' > tibco-migration-project/pom.xml
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-batch</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-activemq</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+
+        <!-- Drools -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>${drools.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+
+        <!-- Google Cloud Pub/Sub -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-gcp-starter-pubsub</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-spring</artifactId>
-            <version>7.67.0.Final</version>
-        </dependency>
+
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
-            <scope>provided</scope>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
 
-        <!-- Test Dependencies -->
+        <!-- Database -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -412,198 +119,973 @@ cat << 'EOF' > tibco-migration-project/pom.xml
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+        </repository>
+    </repositories>
 </project>
 EOF
 
 # Create application.properties
-cat << 'EOF' > tibco-migration-project/src/main/resources/application.properties
+log "Creating application.properties..."
+cat << 'EOF' > fintech-transaction-processor/src/main/resources/application.properties
+# Server Configuration
+server.port=8080
+
 # Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/tibco_db
-spring.datasource.username=root
-spring.datasource.password=password
-spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://localhost:3306/fintech_db
+spring.datasource.username=fintech_user
+spring.datasource.password=securepassword123
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA/Hibernate Configuration
 spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 # Logging Configuration
 logging.level.root=INFO
-logging.level.com.example.tibcomigration=DEBUG
+logging.level.com.fintech=DEBUG
+logging.file.name=logs/transaction.log
 
-# GCP Pub/Sub Configuration
-spring.cloud.gcp.project-id=your-gcp-project-id
-spring.cloud.gcp.pubsub.enabled=true
-spring.cloud.gcp.pubsub.subscription=your-subscription-name
+# Email Configuration
+spring.mail.host=smtp.fintech.com
+spring.mail.port=587
+spring.mail.username=support@fintech.com
+spring.mail.password=emailpassword123
+
+# Google Cloud Pub/Sub Configuration
+spring.cloud.gcp.project-id=your-project-id
+spring.cloud.gcp.credentials.location=classpath:service-account.json
+
+# Batch Configuration
+spring.batch.job.enabled=false
 EOF
 
-# Create Java files
-mkdir -p tibco-migration-project/src/main/java/com/example/tibcomigration/controller
-cat << 'EOF' > tibco-migration-project/src/main/java/com/example/tibcomigration/controller/CreditController.java
-package com.example.tibcomigration.controller;
+# Create Drools rules
+log "Creating Drools rules..."
+cat << 'EOF' > fintech-transaction-processor/src/main/resources/drools/transaction-rules.drl
+package com.fintech.rules
 
-import com.example.tibcomigration.service.CreditMaintenanceService;
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import lombok.RequiredArgsConstructor;
+import com.fintech.model.Transaction
+
+rule "HighValueTransaction"
+    when
+        $transaction : Transaction(amount > 10000)
+    then
+        $transaction.setProcessingStatus("HighValueQueue");
+        System.out.println("High value transaction detected: " + $transaction.getId());
+end
+
+rule "FraudReviewTransaction"
+    when
+        $transaction : Transaction(riskScore > 0.75)
+    then
+        $transaction.setProcessingStatus("FraudReview");
+        System.out.println("High risk transaction detected: " + $transaction.getId());
+end
+
+rule "UsdTransaction"
+    when
+        $transaction : Transaction(currency == "USD")
+    then
+        $transaction.setProcessingStatus("UsdProcessor");
+        System.out.println("USD transaction detected: " + $transaction.getId());
+end
+
+rule "StandardTransaction"
+    when
+        $transaction : Transaction()
+    then
+        $transaction.setProcessingStatus("StandardQueue");
+        System.out.println("Standard transaction detected: " + $transaction.getId());
+end
+EOF
+
+# Create Java codebase
+log "Creating Java codebase..."
+
+# Create AppConfig.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/AppConfig.java
+package com.fintech.config;
+
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public KieContainer kieContainer() {
+        KieServices kieServices = KieServices.Factory.get();
+        return kieServices.getKieClasspathContainer();
+    }
+}
+EOF
+
+# Create DatabaseConfig.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/DatabaseConfig.java
+package com.fintech.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
+
+@Configuration
+public class DatabaseConfig {
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSource dataSource() {
+        return DataSourceBuilder.create().build();
+    }
+}
+EOF
+
+# Create PubSubConfig.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/PubSubConfig.java
+package com.fintech.config;
+
+import com.google.cloud.spring.pubsub.core.PubSubTemplate;
+import com.google.cloud.spring.pubsub.integration.AckMode;
+import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter;
+import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.integration.channel.DirectChannel;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+
+@Configuration
+public class PubSubConfig {
+
+    @Bean
+    public MessageChannel pubsubInputChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public PubSubInboundChannelAdapter messageChannelAdapter(
+            @Qualifier("pubsubInputChannel") MessageChannel inputChannel,
+            PubSubTemplate pubSubTemplate) {
+        PubSubInboundChannelAdapter adapter =
+                new PubSubInboundChannelAdapter(pubSubTemplate, "transaction-subscription");
+        adapter.setOutputChannel(inputChannel);
+        adapter.setAckMode(AckMode.MANUAL);
+        adapter.setPayloadType(String.class);
+        return adapter;
+    }
+
+    @Bean
+    @ServiceActivator(inputChannel = "pubsubInputChannel")
+    public MessageHandler messageReceiver() {
+        return message -> {
+            BasicAcknowledgeablePubsubMessage originalMessage =
+                    message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
+            originalMessage.ack();
+            // TODO: Process the received message
+        };
+    }
+}
+EOF
+
+# Create BatchConfig.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/BatchConfig.java
+package com.fintech.config;
+
+import com.fintech.model.Transaction;
+import com.fintech.repository.TransactionRepository;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.data.RepositoryItemReader;
+import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import java.util.Collections;
+
+@Configuration
+@EnableBatchProcessing
+public class BatchConfig {
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Bean
+    public ItemReader<Transaction> reader() {
+        return new RepositoryItemReaderBuilder<Transaction>()
+                .name("transactionReader")
+                .repository(transactionRepository)
+                .methodName("findAll")
+                .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
+                .build();
+    }
+
+    @Bean
+    public ItemProcessor<Transaction, Transaction> processor() {
+        return transaction -> {
+            // TODO: Implement processing logic
+            return transaction;
+        };
+    }
+
+    @Bean
+    public ItemWriter<Transaction> writer() {
+        return items -> {
+            // TODO: Implement writing logic
+        };
+    }
+
+    @Bean
+    public Step transactionProcessingStep(JobRepository jobRepository,
+                                          PlatformTransactionManager transactionManager,
+                                          ItemReader<Transaction> reader,
+                                          ItemProcessor<Transaction, Transaction> processor,
+                                          ItemWriter<Transaction> writer) {
+        return new StepBuilder("transactionProcessingStep", jobRepository)
+                .<Transaction, Transaction>chunk(10, transactionManager)
+                .reader(reader)
+                .processor(processor)
+                .writer(writer)
+                .build();
+    }
+
+    @Bean
+    public Job transactionProcessingJob(JobRepository jobRepository, Step transactionProcessingStep) {
+        return new JobBuilder("transactionProcessingJob", jobRepository)
+                .start(transactionProcessingStep)
+                .build();
+    }
+}
+EOF
+
+# Create TransactionController.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/controller/TransactionController.java
+package com.fintech.controller;
+
+import com.fintech.model.Transaction;
+import com.fintech.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/credit")
-@RequiredArgsConstructor
-public class CreditController {
+@RequestMapping("/api/transactions")
+public class TransactionController {
 
-    private final CreditMaintenanceService creditMaintenanceService;
+    @Autowired
+    private TransactionService transactionService;
 
-    @PostMapping("/process")
-    public CreditResponseDTO processCredit(@RequestBody CreditRequestDTO request) {
-        return creditMaintenanceService.processCredit(request);
+    @PostMapping
+    public ResponseEntity<Transaction> processTransaction(@RequestBody Transaction transaction) {
+        Transaction processedTransaction = transactionService.processTransaction(transaction);
+        return ResponseEntity.ok(processedTransaction);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Transaction> getTransaction(@PathVariable Long id) {
+        Transaction transaction = transactionService.getTransaction(id);
+        return ResponseEntity.ok(transaction);
     }
 }
 EOF
 
-mkdir -p tibco-migration-project/src/main/java/com/example/tibcomigration/service
-cat << 'EOF' > tibco-migration-project/src/main/java/com/example/tibcomigration/service/CreditMaintenanceService.java
-package com.example.tibcomigration.service;
+# Create TransactionService.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/service/TransactionService.java
+package com.fintech.service;
 
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import com.example.tibcomigration.repository.CreditRepository;
-import lombok.RequiredArgsConstructor;
+import com.fintech.model.Transaction;
+import com.fintech.repository.TransactionRepository;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class CreditMaintenanceService {
+public class TransactionService {
 
-    private final CreditRepository creditRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
 
-    public CreditResponseDTO processCredit(CreditRequestDTO request) {
-        // Business logic implementation
-        // TODO: Implement business logic based on TIBCO processes
-        return new CreditResponseDTO("Processed successfully");
+    @Autowired
+    private KieContainer kieContainer;
+
+    public Transaction processTransaction(Transaction transaction) {
+        // Validate transaction
+        if (!validateTransaction(transaction)) {
+            throw new IllegalArgumentException("Invalid transaction");
+        }
+
+        // Enrich transaction
+        enrichTransaction(transaction);
+
+        // Apply business rules
+        applyBusinessRules(transaction);
+
+        // Persist transaction
+        return transactionRepository.save(transaction);
+    }
+
+    public Transaction getTransaction(Long id) {
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+    }
+
+    private boolean validateTransaction(Transaction transaction) {
+        // TODO: Implement validation logic
+        return true;
+    }
+
+    private void enrichTransaction(Transaction transaction) {
+        // TODO: Implement enrichment logic
+    }
+
+    private void applyBusinessRules(Transaction transaction) {
+        KieSession kieSession = kieContainer.newKieSession("transactionRulesSession");
+        kieSession.insert(transaction);
+        kieSession.fireAllRules();
+        kieSession.dispose();
     }
 }
 EOF
 
-mkdir -p tibco-migration-project/src/main/java/com/example/tibcomigration/repository
-cat << 'EOF' > tibco-migration-project/src/main/java/com/example/tibcomigration/repository/CreditRepository.java
-package com.example.tibcomigration.repository;
+# Create PubSubService.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/service/PubSubService.java
+package com.fintech.service;
 
-import com.example.tibcomigration.entity.CreditEntity;
+import com.google.cloud.spring.pubsub.core.PubSubTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PubSubService {
+
+    @Autowired
+    private PubSubTemplate pubSubTemplate;
+
+    public void publishMessage(String topic, String message) {
+        pubSubTemplate.publish(topic, message);
+    }
+}
+EOF
+
+# Create TransactionRepository.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/repository/TransactionRepository.java
+package com.fintech.repository;
+
+import com.fintech.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CreditRepository extends JpaRepository<CreditEntity, Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+    // Custom query methods can be added here
 }
 EOF
 
-mkdir -p tibco-migration-project/src/main/java/com/example/tibcomigration/dto
-cat << 'EOF' > tibco-migration-project/src/main/java/com/example/tibcomigration/dto/CreditRequestDTO.java
-package com.example.tibcomigration.dto;
+# Create Transaction.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/model/Transaction.java
+package com.fintech.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Data
-public class CreditRequestDTO {
-    private String name;
-    private int age;
+@Entity
+public class Transaction {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private BigDecimal amount;
+    private String currency;
+    private LocalDateTime timestamp;
+    private String sourceAccount;
+    private String destinationAccount;
+    private String customerName;
+    private String customerId;
+    private BigDecimal riskScore;
+    private String processingStatus;
 }
 EOF
 
-cat << 'EOF' > tibco-migration-project/src/main/java/com/example/tibcomigration/dto/CreditResponseDTO.java
-package com.example.tibcomigration.dto;
+# Create GlobalExceptionHandler.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/exception/GlobalExceptionHandler.java
+package com.fintech.exception;
 
-import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
-@Data
-public class CreditResponseDTO {
-    private String message;
+import java.time.LocalDateTime;
 
-    public CreditResponseDTO(String message) {
-        this.message = message;
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getDescription(false),
+                "INTERNAL_SERVER_ERROR"
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDetails> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                ex.getMessage(),
+                request.getDescription(false),
+                "BAD_REQUEST"
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 }
 EOF
 
-mkdir -p tibco-migration-project/src/main/java/com/example/tibcomigration/entity
-cat << 'EOF' > tibco-migration-project/src/main/java/com/example/tibcomigration/entity/CreditEntity.java
-package com.example.tibcomigration.entity;
+# Create ErrorDetails.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/exception/ErrorDetails.java
+package com.fintech.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import java.time.LocalDateTime;
 
-@Entity
 @Data
-public class CreditEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private int age;
+@AllArgsConstructor
+public class ErrorDetails {
+    private LocalDateTime timestamp;
+    private String message;
+    private String details;
+    private String errorCode;
 }
 EOF
 
-mkdir -p tibco-migration-project/src/test/java/com/example/tibcomigration/service
-cat << 'EOF' > tibco-migration-project/src/test/java/com/example/tibcomigration/service/CreditMaintenanceServiceTest.java
-package com.example.tibcomigration.service;
+# Create TransactionListener.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/listener/TransactionListener.java
+package com.fintech.listener;
 
-import com.example.tibcomigration.dto.CreditRequestDTO;
-import com.example.tibcomigration.dto.CreditResponseDTO;
-import com.example.tibcomigration.repository.CreditRepository;
+import com.fintech.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gcp.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import org.springframework.cloud.gcp.pubsub.support.GcpPubSubHeaders;
+import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.messaging.Message;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TransactionListener {
+
+    @Autowired
+    private TransactionService transactionService;
+
+    @ServiceActivator(inputChannel = "pubsubInputChannel")
+    public void processMessage(Message<String> message) {
+        BasicAcknowledgeablePubsubMessage originalMessage =
+                message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
+
+        try {
+            String payload = message.getPayload();
+            // TODO: Process the payload and call transactionService.processTransaction
+            originalMessage.ack();
+        } catch (Exception e) {
+            originalMessage.nack();
+            // TODO: Handle error appropriately
+        }
+    }
+}
+EOF
+
+# Create TransactionPublisher.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/publisher/TransactionPublisher.java
+package com.fintech.publisher;
+
+import com.fintech.service.PubSubService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TransactionPublisher {
+
+    @Autowired
+    private PubSubService pubSubService;
+
+    public void publishTransaction(String topic, String transactionJson) {
+        pubSubService.publishMessage(topic, transactionJson);
+    }
+}
+EOF
+
+# Create TransactionItemProcessor.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/batch/TransactionItemProcessor.java
+package com.fintech.batch;
+
+import com.fintech.model.Transaction;
+import org.springframework.batch.item.ItemProcessor;
+
+public class TransactionItemProcessor implements ItemProcessor<Transaction, Transaction> {
+
+    @Override
+    public Transaction process(Transaction transaction) throws Exception {
+        // TODO: Implement processing logic
+        return transaction;
+    }
+}
+EOF
+
+# Create LoggingUtil.java
+cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/util/LoggingUtil.java
+package com.fintech.util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class LoggingUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoggingUtil.class);
+
+    public static void logInfo(String message) {
+        logger.info(message);
+    }
+
+    public static void logError(String message, Throwable throwable) {
+        logger.error(message, throwable);
+    }
+}
+EOF
+
+# Create unit tests
+log "Creating unit tests..."
+
+# Create TransactionControllerTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/controller/TransactionControllerTest.java
+package com.fintech.controller;
+
+import com.fintech.model.Transaction;
+import com.fintech.service.TransactionService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-public class CreditMaintenanceServiceTest {
+class TransactionControllerTest {
 
     @Mock
-    private CreditRepository creditRepository;
+    private TransactionService transactionService;
 
     @InjectMocks
-    private CreditMaintenanceService creditMaintenanceService;
+    private TransactionController transactionController;
+
+    private Transaction testTransaction;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        testTransaction = new Transaction();
+        testTransaction.setId(1L);
+        testTransaction.setAmount(new BigDecimal("100.00"));
+        testTransaction.setCurrency("USD");
+        testTransaction.setTimestamp(LocalDateTime.now());
+        testTransaction.setSourceAccount("123456789");
+        testTransaction.setDestinationAccount("987654321");
+        testTransaction.setCustomerName("John Doe");
+        testTransaction.setCustomerId("CUST123");
+        testTransaction.setRiskScore(new BigDecimal("0.5"));
+        testTransaction.setProcessingStatus("PROCESSED");
+    }
 
     @Test
-    public void testProcessCredit() {
-        CreditRequestDTO request = new CreditRequestDTO();
-        request.setName("John Doe");
-        request.setAge(30);
+    void processTransaction_ShouldReturnProcessedTransaction() {
+        when(transactionService.processTransaction(testTransaction)).thenReturn(testTransaction);
 
-        CreditResponseDTO expectedResponse = new CreditResponseDTO("Processed successfully");
+        ResponseEntity<Transaction> response = transactionController.processTransaction(testTransaction);
 
-        // Mock repository behavior if needed
-        // when(creditRepository.someMethod()).thenReturn(someValue);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(testTransaction, response.getBody());
+    }
 
-        CreditResponseDTO response = creditMaintenanceService.processCredit(request);
+    @Test
+    void getTransaction_ShouldReturnTransaction() {
+        when(transactionService.getTransaction(1L)).thenReturn(testTransaction);
 
-        assertEquals(expectedResponse.getMessage(), response.getMessage());
+        ResponseEntity<Transaction> response = transactionController.getTransaction(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(testTransaction, response.getBody());
+    }
+}
+EOF
+
+# Create TransactionServiceTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/service/TransactionServiceTest.java
+package com.fintech.service;
+
+import com.fintech.model.Transaction;
+import com.fintech.repository.TransactionRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+class TransactionServiceTest {
+
+    @Mock
+    private TransactionRepository transactionRepository;
+
+    @InjectMocks
+    private TransactionService transactionService;
+
+    private Transaction testTransaction;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        testTransaction = new Transaction();
+        testTransaction.setId(1L);
+        testTransaction.setAmount(new BigDecimal("100.00"));
+        testTransaction.setCurrency("USD");
+        testTransaction.setTimestamp(LocalDateTime.now());
+        testTransaction.setSourceAccount("123456789");
+        testTransaction.setDestinationAccount("987654321");
+        testTransaction.setCustomerName("John Doe");
+        testTransaction.setCustomerId("CUST123");
+        testTransaction.setRiskScore(new BigDecimal("0.5"));
+        testTransaction.setProcessingStatus("PROCESSED");
+    }
+
+    @Test
+    void processTransaction_ShouldReturnProcessedTransaction() {
+        when(transactionRepository.save(testTransaction)).thenReturn(testTransaction);
+
+        Transaction result = transactionService.processTransaction(testTransaction);
+
+        assertEquals(testTransaction, result);
+    }
+
+    @Test
+    void getTransaction_ShouldReturnTransaction() {
+        when(transactionRepository.findById(1L)).thenReturn(Optional.of(testTransaction));
+
+        Transaction result = transactionService.getTransaction(1L);
+
+        assertEquals(testTransaction, result);
+    }
+
+    @Test
+    void getTransaction_ShouldThrowExceptionWhenNotFound() {
+        when(transactionRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> transactionService.getTransaction(1L));
+    }
+}
+EOF
+
+# Create TransactionRepositoryTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/repository/TransactionRepositoryTest.java
+package com.fintech.repository;
+
+import com.fintech.model.Transaction;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@DataJpaTest
+class TransactionRepositoryTest {
+
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Test
+    void whenFindById_thenReturnTransaction() {
+        // given
+        Transaction testTransaction = new Transaction();
+        testTransaction.setAmount(new BigDecimal("100.00"));
+        testTransaction.setCurrency("USD");
+        testTransaction.setTimestamp(LocalDateTime.now());
+        testTransaction.setSourceAccount("123456789");
+        testTransaction.setDestinationAccount("987654321");
+        testTransaction.setCustomerName("John Doe");
+        testTransaction.setCustomerId("CUST123");
+        testTransaction.setRiskScore(new BigDecimal("0.5"));
+        testTransaction.setProcessingStatus("PROCESSED");
+
+        entityManager.persist(testTransaction);
+        entityManager.flush();
+
+        // when
+        Optional<Transaction> found = transactionRepository.findById(testTransaction.getId());
+
+        // then
+        assertTrue(found.isPresent());
+        assertEquals(testTransaction.getId(), found.get().getId());
+    }
+}
+EOF
+
+# Create TransactionListenerTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/listener/TransactionListenerTest.java
+package com.fintech.listener;
+
+import com.fintech.service.TransactionService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.gcp.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import org.springframework.cloud.gcp.pubsub.support.GcpPubSubHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+
+import static org.mockito.Mockito.*;
+
+class TransactionListenerTest {
+
+    @Mock
+    private TransactionService transactionService;
+
+    @Mock
+    private BasicAcknowledgeablePubsubMessage acknowledgeablePubsubMessage;
+
+    @InjectMocks
+    private TransactionListener transactionListener;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void processMessage_ShouldAcknowledgeMessage() {
+        String testPayload = "{\"id\":1,\"amount\":100.00,\"currency\":\"USD\"}";
+
+        Message<String> message = MessageBuilder.withPayload(testPayload)
+                .setHeader(GcpPubSubHeaders.ORIGINAL_MESSAGE, acknowledgeablePubsubMessage)
+                .build();
+
+        transactionListener.processMessage(message);
+
+        verify(acknowledgeablePubsubMessage, times(1)).ack();
+    }
+
+    @Test
+    void processMessage_ShouldNackMessageOnException() {
+        String testPayload = "invalid json";
+
+        Message<String> message = MessageBuilder.withPayload(testPayload)
+                .setHeader(GcpPubSubHeaders.ORIGINAL_MESSAGE, acknowledgeablePubsubMessage)
+                .build();
+
+        transactionListener.processMessage(message);
+
+        verify(acknowledgeablePubsubMessage, times(1)).nack();
+    }
+}
+EOF
+
+# Create TransactionPublisherTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/publisher/TransactionPublisherTest.java
+package com.fintech.publisher;
+
+import com.fintech.service.PubSubService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.verify;
+
+class TransactionPublisherTest {
+
+    @Mock
+    private PubSubService pubSubService;
+
+    @InjectMocks
+    private TransactionPublisher transactionPublisher;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void publishTransaction_ShouldCallPubSubService() {
+        String testTopic = "test-topic";
+        String testTransactionJson = "{\"id\":1,\"amount\":100.00,\"currency\":\"USD\"}";
+
+        transactionPublisher.publishTransaction(testTopic, testTransactionJson);
+
+        verify(pubSubService).publishMessage(testTopic, testTransactionJson);
+    }
+}
+EOF
+
+# Create TransactionItemProcessorTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/batch/TransactionItemProcessorTest.java
+package com.fintech.batch;
+
+import com.fintech.model.Transaction;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class TransactionItemProcessorTest {
+
+    private TransactionItemProcessor transactionItemProcessor;
+    private Transaction testTransaction;
+
+    @BeforeEach
+    void setUp() {
+        transactionItemProcessor = new TransactionItemProcessor();
+
+        testTransaction = new Transaction();
+        testTransaction.setId(1L);
+        testTransaction.setAmount(new BigDecimal("100.00"));
+        testTransaction.setCurrency("USD");
+        testTransaction.setTimestamp(LocalDateTime.now());
+        testTransaction.setSourceAccount("123456789");
+        testTransaction.setDestinationAccount("987654321");
+        testTransaction.setCustomerName("John Doe");
+        testTransaction.setCustomerId("CUST123");
+        testTransaction.setRiskScore(new BigDecimal("0.5"));
+        testTransaction.setProcessingStatus("PROCESSED");
+    }
+
+    @Test
+    void process_ShouldReturnProcessedTransaction() throws Exception {
+        Transaction result = transactionItemProcessor.process(testTransaction);
+
+        assertEquals(testTransaction, result);
+        // TODO: Add more specific assertions based on your processing logic
+    }
+}
+EOF
+
+# Create LoggingUtilTest.java
+cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/util/LoggingUtilTest.java
+package com.fintech.util;
+
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.mockito.Mockito.*;
+
+class LoggingUtilTest {
+
+    @Test
+    void logInfo_ShouldLogMessage() {
+        Logger loggerMock = mock(Logger.class);
+        when(LoggerFactory.getLogger(LoggingUtil.class)).thenReturn(loggerMock);
+
+        String testMessage = "Test info message";
+        LoggingUtil.logInfo(testMessage);
+
+        verify(loggerMock).info(testMessage);
+    }
+
+    @Test
+    void logError_ShouldLogMessageAndException() {
+        Logger loggerMock = mock(Logger.class);
+        when(LoggerFactory.getLogger(LoggingUtil.class)).thenReturn(loggerMock);
+
+        String testMessage = "Test error message";
+        Exception testException = new Exception("Test exception");
+
+        LoggingUtil.logError(testMessage, testException);
+
+        verify(loggerMock).error(testMessage, testException);
     }
 }
 EOF
 
 # Build and run the application
-cd tibco-migration-project
-mvn clean install
-mvn spring-boot:run
+log "Building and running the application..."
+cd fintech-transaction-processor
+mvn clean compile
+mvn test
+mvn package
+java -jar target/fintech-transaction-processor-1.0.0.jar
+
+log "Setup and compilation complete."
 ```
-
-### Guidelines for Implementation
-
-1. **Maintain Clean, Modular, and Well-Documented Code**: Ensure that the code is well-structured, modular, and includes inline comments for future enhancements or clarifications.
-2. **Validate the Bash Script**: Ensure the Bash script produces a fully functional Spring Boot application that compiles and runs without errors.
-3. **Preserve Business Logic Fidelity**: Mirror the original TIBCO workflows and logic with precision, ensuring the final application adheres to the original specifications.
-
-### Conclusion
-
-This comprehensive guide provides a detailed roadmap for migrating a TIBCO BusinessWorks and BusinessEvents project to a modern Java 25 and Spring Boot 3.5.0 application. By following the outlined steps and best practices, you can ensure a smooth transition while preserving business logic fidelity, enhancing scalability, maintainability, and cloud compatibility.

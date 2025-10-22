@@ -1,11 +1,20 @@
 import sqlite3
 import faiss
 import json
+import logging
 import numpy as np
 import os
 from typing import List, Optional, Union
 from sentence_transformers import SentenceTransformer
 from crewai.memory.storage.interface import Storage
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 CREW_MEMORY_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "crew_memory.db"))
 
@@ -101,21 +110,40 @@ class LocalVectorMemory(Storage):
         cursor.execute("SELECT agent, metadata, content FROM memory")
         rows = cursor.fetchall()
 
+        # Prepare batches for more efficient processing
+        embeddings_batch = []
+        metadata_batch = []
+
         for agent, metadata_str, content in rows:
             try:
                 metadata = json.loads(metadata_str) if metadata_str else {}
                 embedding = self.model.encode(content)
 
-                # Add to FAISS index
-                self.index.add(np.array([embedding]).astype("float32"))
-                self.embeddings.append(embedding)
-
-                # Add to metadata
-                self.metadata.append({
+                # Store for batch processing
+                embeddings_batch.append(embedding)
+                metadata_batch.append({
                     "agent": agent,
                     "metadata": metadata,
                     "content": content
                 })
-            except Exception as e:
-                print(f"Error loading memory item: {e}")
+
+                # Log the loaded item
+                logger.debug("Loading memory item: agent=%s, metadata_keys=%s, content_length=%d",
+                            agent, list(metadata.keys()) if metadata else [], len(content))
+
+            except json.JSONDecodeError as e:
+                logger.error("JSON decode error for metadata '%s': %s", metadata_str, e)
                 continue
+            except Exception as e:
+                logger.error("Error loading memory item: %s", e)
+                continue
+
+        # Add all embeddings to FAISS index in one batch
+        if embeddings_batch:
+            self.index.add(np.array(embeddings_batch).astype("float32"))
+            self.embeddings.extend(embeddings_batch)
+            self.metadata.extend(metadata_batch)
+
+            logger.info("Successfully loaded %d memory items", len(embeddings_batch))
+        else:
+            logger.warning("No memory items were loaded from the database")

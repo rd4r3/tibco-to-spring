@@ -21,8 +21,9 @@ class TibcoToSpring():
 
 	llm_cache = {}
 	llm = LLM(
-        model="mistral/mistral-large-2411",
+        # model="mistral/mistral-large-2411",
         # model="mistral/mistral-large-latest",
+		model="mistral/codestral-2508",
         temperature=0.7,
         cache=llm_cache  # Enable caching
     )
