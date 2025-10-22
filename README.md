@@ -49,6 +49,14 @@ Create a `.env` file in the root directory and add your Mistral API key:
 
 ```env
 MISTRAL_API_KEY=your_key_here
+```  
+
+## ▶️ Training the Project
+
+From the root folder, launch your crew:
+
+```bash
+TIBCO_DIRECTORY=<tibco_project_directory> crewai train -n <number_of_iterations>
 ```
 
 ## ▶️ Running the Project
