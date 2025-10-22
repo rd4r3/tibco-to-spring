@@ -4,10 +4,14 @@ import sys
 import warnings
 from pathlib import Path
 from tibco_to_spring.crew import TibcoToSpring
+from tibco_to_spring.logging_config import get_logger
 
 # Constants
 OUTPUT_DIR = Path("outputs")
 BASH_FILE = OUTPUT_DIR / "bash_script.sh"
+
+# Set up logging
+logger = get_logger(__name__)
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -16,7 +20,7 @@ def run() -> None:
         # Get crew output
         crew_output = TibcoToSpring().crew().kickoff()
 
-         # Ensure output directories exist
+        # Ensure output directories exist
         OUTPUT_DIR.mkdir(exist_ok=True)
 
         # Write bash script to the springBootProject directory
@@ -24,7 +28,7 @@ def run() -> None:
         if os.name != "nt":  # Not Windows
             BASH_FILE.chmod(BASH_FILE.stat().st_mode | 0o755)
 
-        print(f"Files created successfully in {OUTPUT_DIR.absolute()}")
+        logger.info(f"Files created successfully in {OUTPUT_DIR.absolute()}")
 
     except Exception as e:
         raise IOError(f"Error processing output: {e}")
@@ -38,6 +42,7 @@ def train() -> None:
     }
     try:
         TibcoToSpring().crew(training_mode=True).train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
+        logger.info("Training completed successfully")
 
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")

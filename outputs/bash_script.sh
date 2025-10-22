@@ -1,26 +1,17 @@
 ```bash
 #!/bin/bash
 
-# Logging function
-log() {
-    echo "[INFO] $1"
-}
+# Create project directory
+mkdir -p fintech-transaction-processor
+cd fintech-transaction-processor
 
 # Create directory structure
-log "Creating directory structure..."
-mkdir -p fintech-transaction-processor/src/{main,test}/{java/com/fintech,resources/{static,templates}}
-mkdir -p fintech-transaction-processor/src/{main,test}/resources/{config,drools}
-
-# Create package directories
-mkdir -p fintech-transaction-processor/src/main/java/com/fintech/{config,controller,service,repository,model,exception,listener,publisher,batch,util}
-mkdir -p fintech-transaction-processor/src/test/java/com/fintech/{controller,service,repository,listener,publisher,batch,util}
-
-# Create resource directories
-mkdir -p fintech-transaction-processor/src/main/resources/{schemas,transformations,logs}
+mkdir -p src/{main,test}/{java/com/fintech/transactionprocessor,resources/{config,drools,schemas,transformations,logs}}
+mkdir -p src/main/java/com/fintech/transactionprocessor/{config,controller,service,repository,model,exception,listener,publisher,batch,util}
+mkdir -p src/test/java/com/fintech/transactionprocessor/{controller,service,repository,listener,publisher,batch,util}
 
 # Create pom.xml
-log "Creating pom.xml..."
-cat << 'EOF' > fintech-transaction-processor/pom.xml
+cat << 'EOF' > pom.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -33,7 +24,7 @@ cat << 'EOF' > fintech-transaction-processor/pom.xml
     </parent>
 
     <groupId>com.fintech</groupId>
-    <artifactId>fintech-transaction-processor</artifactId>
+    <artifactId>transaction-processor</artifactId>
     <version>1.0.0</version>
     <name>Fintech Transaction Processor</name>
     <description>Spring Boot application for processing fintech transactions</description>
@@ -142,8 +133,7 @@ cat << 'EOF' > fintech-transaction-processor/pom.xml
 EOF
 
 # Create application.properties
-log "Creating application.properties..."
-cat << 'EOF' > fintech-transaction-processor/src/main/resources/application.properties
+cat << 'EOF' > src/main/resources/application.properties
 # Server Configuration
 server.port=8080
 
@@ -177,52 +167,9 @@ spring.cloud.gcp.credentials.location=classpath:service-account.json
 spring.batch.job.enabled=false
 EOF
 
-# Create Drools rules
-log "Creating Drools rules..."
-cat << 'EOF' > fintech-transaction-processor/src/main/resources/drools/transaction-rules.drl
-package com.fintech.rules
-
-import com.fintech.model.Transaction
-
-rule "HighValueTransaction"
-    when
-        $transaction : Transaction(amount > 10000)
-    then
-        $transaction.setProcessingStatus("HighValueQueue");
-        System.out.println("High value transaction detected: " + $transaction.getId());
-end
-
-rule "FraudReviewTransaction"
-    when
-        $transaction : Transaction(riskScore > 0.75)
-    then
-        $transaction.setProcessingStatus("FraudReview");
-        System.out.println("High risk transaction detected: " + $transaction.getId());
-end
-
-rule "UsdTransaction"
-    when
-        $transaction : Transaction(currency == "USD")
-    then
-        $transaction.setProcessingStatus("UsdProcessor");
-        System.out.println("USD transaction detected: " + $transaction.getId());
-end
-
-rule "StandardTransaction"
-    when
-        $transaction : Transaction()
-    then
-        $transaction.setProcessingStatus("StandardQueue");
-        System.out.println("Standard transaction detected: " + $transaction.getId());
-end
-EOF
-
-# Create Java codebase
-log "Creating Java codebase..."
-
-# Create AppConfig.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/AppConfig.java
-package com.fintech.config;
+# Create configuration classes
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/config/AppConfig.java
+package com.fintech.transactionprocessor.config;
 
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
@@ -240,9 +187,8 @@ public class AppConfig {
 }
 EOF
 
-# Create DatabaseConfig.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/DatabaseConfig.java
-package com.fintech.config;
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/config/DatabaseConfig.java
+package com.fintech.transactionprocessor.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -262,9 +208,8 @@ public class DatabaseConfig {
 }
 EOF
 
-# Create PubSubConfig.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/PubSubConfig.java
-package com.fintech.config;
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/config/PubSubConfig.java
+package com.fintech.transactionprocessor.config;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.integration.AckMode;
@@ -312,12 +257,11 @@ public class PubSubConfig {
 }
 EOF
 
-# Create BatchConfig.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/config/BatchConfig.java
-package com.fintech.config;
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/config/BatchConfig.java
+package com.fintech.transactionprocessor.config;
 
-import com.fintech.model.Transaction;
-import com.fintech.repository.TransactionRepository;
+import com.fintech.transactionprocessor.model.Transaction;
+import com.fintech.transactionprocessor.repository.TransactionRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -392,12 +336,12 @@ public class BatchConfig {
 }
 EOF
 
-# Create TransactionController.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/controller/TransactionController.java
-package com.fintech.controller;
+# Create controller
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/controller/TransactionController.java
+package com.fintech.transactionprocessor.controller;
 
-import com.fintech.model.Transaction;
-import com.fintech.service.TransactionService;
+import com.fintech.transactionprocessor.model.Transaction;
+import com.fintech.transactionprocessor.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -423,12 +367,12 @@ public class TransactionController {
 }
 EOF
 
-# Create TransactionService.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/service/TransactionService.java
-package com.fintech.service;
+# Create service
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/service/TransactionService.java
+package com.fintech.transactionprocessor.service;
 
-import com.fintech.model.Transaction;
-import com.fintech.repository.TransactionRepository;
+import com.fintech.transactionprocessor.model.Transaction;
+import com.fintech.transactionprocessor.repository.TransactionRepository;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -482,9 +426,8 @@ public class TransactionService {
 }
 EOF
 
-# Create PubSubService.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/service/PubSubService.java
-package com.fintech.service;
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/service/PubSubService.java
+package com.fintech.transactionprocessor.service;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -502,11 +445,11 @@ public class PubSubService {
 }
 EOF
 
-# Create TransactionRepository.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/repository/TransactionRepository.java
-package com.fintech.repository;
+# Create repository
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/repository/TransactionRepository.java
+package com.fintech.transactionprocessor.repository;
 
-import com.fintech.model.Transaction;
+import com.fintech.transactionprocessor.model.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -516,9 +459,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 }
 EOF
 
-# Create Transaction.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/model/Transaction.java
-package com.fintech.model;
+# Create model
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/model/Transaction.java
+package com.fintech.transactionprocessor.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -547,9 +490,9 @@ public class Transaction {
 }
 EOF
 
-# Create GlobalExceptionHandler.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/exception/GlobalExceptionHandler.java
-package com.fintech.exception;
+# Create exception classes
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/exception/GlobalExceptionHandler.java
+package com.fintech.transactionprocessor.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -586,9 +529,8 @@ public class GlobalExceptionHandler {
 }
 EOF
 
-# Create ErrorDetails.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/exception/ErrorDetails.java
-package com.fintech.exception;
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/exception/ErrorDetails.java
+package com.fintech.transactionprocessor.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -605,11 +547,11 @@ public class ErrorDetails {
 }
 EOF
 
-# Create TransactionListener.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/listener/TransactionListener.java
-package com.fintech.listener;
+# Create listener
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/listener/TransactionListener.java
+package com.fintech.transactionprocessor.listener;
 
-import com.fintech.service.TransactionService;
+import com.fintech.transactionprocessor.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gcp.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import org.springframework.cloud.gcp.pubsub.support.GcpPubSubHeaders;
@@ -640,11 +582,11 @@ public class TransactionListener {
 }
 EOF
 
-# Create TransactionPublisher.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/publisher/TransactionPublisher.java
-package com.fintech.publisher;
+# Create publisher
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/publisher/TransactionPublisher.java
+package com.fintech.transactionprocessor.publisher;
 
-import com.fintech.service.PubSubService;
+import com.fintech.transactionprocessor.service.PubSubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -660,11 +602,11 @@ public class TransactionPublisher {
 }
 EOF
 
-# Create TransactionItemProcessor.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/batch/TransactionItemProcessor.java
-package com.fintech.batch;
+# Create batch processor
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/batch/TransactionItemProcessor.java
+package com.fintech.transactionprocessor.batch;
 
-import com.fintech.model.Transaction;
+import com.fintech.transactionprocessor.model.Transaction;
 import org.springframework.batch.item.ItemProcessor;
 
 public class TransactionItemProcessor implements ItemProcessor<Transaction, Transaction> {
@@ -677,9 +619,9 @@ public class TransactionItemProcessor implements ItemProcessor<Transaction, Tran
 }
 EOF
 
-# Create LoggingUtil.java
-cat << 'EOF' > fintech-transaction-processor/src/main/java/com/fintech/util/LoggingUtil.java
-package com.fintech.util;
+# Create utility classes
+cat << 'EOF' > src/main/java/com/fintech/transactionprocessor/util/LoggingUtil.java
+package com.fintech.transactionprocessor.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -698,15 +640,51 @@ public class LoggingUtil {
 }
 EOF
 
+# Create Drools rules
+cat << 'EOF' > src/main/resources/drools/transaction-rules.drl
+package com.fintech.transactionprocessor.rules
+
+import com.fintech.transactionprocessor.model.Transaction
+
+rule "HighValueTransaction"
+    when
+        \$transaction : Transaction(amount > 10000)
+    then
+        \$transaction.setProcessingStatus("HighValueQueue");
+        System.out.println("High value transaction detected: " + \$transaction.getId());
+end
+
+rule "FraudReviewTransaction"
+    when
+        \$transaction : Transaction(riskScore > 0.75)
+    then
+        \$transaction.setProcessingStatus("FraudReview");
+        System.out.println("High risk transaction detected: " + \$transaction.getId());
+end
+
+rule "UsdTransaction"
+    when
+        \$transaction : Transaction(currency == "USD")
+    then
+        \$transaction.setProcessingStatus("UsdProcessor");
+        System.out.println("USD transaction detected: " + \$transaction.getId());
+end
+
+rule "StandardTransaction"
+    when
+        \$transaction : Transaction()
+    then
+        \$transaction.setProcessingStatus("StandardQueue");
+        System.out.println("Standard transaction detected: " + \$transaction.getId());
+end
+EOF
+
 # Create unit tests
-log "Creating unit tests..."
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/controller/TransactionControllerTest.java
+package com.fintech.transactionprocessor.controller;
 
-# Create TransactionControllerTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/controller/TransactionControllerTest.java
-package com.fintech.controller;
-
-import com.fintech.model.Transaction;
-import com.fintech.service.TransactionService;
+import com.fintech.transactionprocessor.model.Transaction;
+import com.fintech.transactionprocessor.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -770,12 +748,11 @@ class TransactionControllerTest {
 }
 EOF
 
-# Create TransactionServiceTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/service/TransactionServiceTest.java
-package com.fintech.service;
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/service/TransactionServiceTest.java
+package com.fintech.transactionprocessor.service;
 
-import com.fintech.model.Transaction;
-import com.fintech.repository.TransactionRepository;
+import com.fintech.transactionprocessor.model.Transaction;
+import com.fintech.transactionprocessor.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -844,11 +821,10 @@ class TransactionServiceTest {
 }
 EOF
 
-# Create TransactionRepositoryTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/repository/TransactionRepositoryTest.java
-package com.fintech.repository;
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/repository/TransactionRepositoryTest.java
+package com.fintech.transactionprocessor.repository;
 
-import com.fintech.model.Transaction;
+import com.fintech.transactionprocessor.model.Transaction;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -897,11 +873,10 @@ class TransactionRepositoryTest {
 }
 EOF
 
-# Create TransactionListenerTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/listener/TransactionListenerTest.java
-package com.fintech.listener;
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/listener/TransactionListenerTest.java
+package com.fintech.transactionprocessor.listener;
 
-import com.fintech.service.TransactionService;
+import com.fintech.transactionprocessor.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -958,11 +933,10 @@ class TransactionListenerTest {
 }
 EOF
 
-# Create TransactionPublisherTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/publisher/TransactionPublisherTest.java
-package com.fintech.publisher;
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/publisher/TransactionPublisherTest.java
+package com.fintech.transactionprocessor.publisher;
 
-import com.fintech.service.PubSubService;
+import com.fintech.transactionprocessor.service.PubSubService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -996,11 +970,10 @@ class TransactionPublisherTest {
 }
 EOF
 
-# Create TransactionItemProcessorTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/batch/TransactionItemProcessorTest.java
-package com.fintech.batch;
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/batch/TransactionItemProcessorTest.java
+package com.fintech.transactionprocessor.batch;
 
-import com.fintech.model.Transaction;
+import com.fintech.transactionprocessor.model.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -1041,9 +1014,8 @@ class TransactionItemProcessorTest {
 }
 EOF
 
-# Create LoggingUtilTest.java
-cat << 'EOF' > fintech-transaction-processor/src/test/java/com/fintech/util/LoggingUtilTest.java
-package com.fintech.util;
+cat << 'EOF' > src/test/java/com/fintech/transactionprocessor/util/LoggingUtilTest.java
+package com.fintech.transactionprocessor.util;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -1079,13 +1051,83 @@ class LoggingUtilTest {
 }
 EOF
 
-# Build and run the application
-log "Building and running the application..."
-cd fintech-transaction-processor
-mvn clean compile
-mvn test
-mvn package
-java -jar target/fintech-transaction-processor-1.0.0.jar
+# Create README.md
+cat << 'EOF' > README.md
+# Fintech Transaction Processor
 
-log "Setup and compilation complete."
+This is a Spring Boot application for processing fintech transactions. It provides REST endpoints for transaction processing and integrates with Google Cloud Pub/Sub for message handling.
+
+## Features
+
+- Transaction processing with validation and enrichment
+- Integration with Google Cloud Pub/Sub
+- Batch processing capabilities
+- Drools rule engine for business rule management
+- REST API for transaction processing
+
+## Prerequisites
+
+- Java 25
+- Maven
+- MySQL Database
+- Google Cloud account with Pub/Sub enabled
+
+## Configuration
+
+Update the `src/main/resources/application.properties` file with your specific configuration:
+
+```properties
+# Database Configuration
+spring.datasource.url=jdbc:mysql://localhost:3306/fintech_db
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+
+# Google Cloud Pub/Sub Configuration
+spring.cloud.gcp.project-id=your-project-id
+spring.cloud.gcp.credentials.location=classpath:service-account.json
+```
+
+## Running the Application
+
+1. Build the application:
+   ```bash
+   mvn clean install
+   ```
+
+2. Run the application:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+3. Run specific batch job:
+   ```bash
+   mvn spring-boot:run -Dspring-boot.run.arguments=--spring.batch.job.names=transactionProcessingJob
+   ```
+
+## API Endpoints
+
+- `POST /api/transactions`: Process a new transaction
+- `GET /api/transactions/{id}`: Retrieve a transaction by ID
+
+## Testing
+
+Run tests with:
+```bash
+mvn test
+```
+
+## Deployment
+
+The application can be deployed to any cloud platform that supports Spring Boot applications. Ensure you have the necessary environment variables set for configuration.
+
+## Contributing
+
+Contributions are welcome. Please fork the repository and create a pull request with your changes.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+EOF
+
+echo "Project setup complete. You can now build and run the application using Maven."
 ```

@@ -4,6 +4,10 @@ from crewai_tools import FileReadTool, DirectoryReadTool
 import os
 from tibco_to_spring.local_vector_memory import LocalVectorMemory
 from crewai.memory.external.external_memory import ExternalMemory
+from tibco_to_spring.logging_config import get_logger
+
+# Set up logging
+logger = get_logger(__name__)
 
 @CrewBase
 class TibcoToSpring():
@@ -11,7 +15,7 @@ class TibcoToSpring():
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 	tibco_directory = os.getenv('TIBCO_DIRECTORY', 'tibco_samples/FintechTransactionProcessorAsString')
-	print(f"Using TIBCO directory: {tibco_directory}")
+	logger.info(f"Using TIBCO directory: {tibco_directory}")
 	dir_tool = DirectoryReadTool(directory=tibco_directory)
 	file_tool = FileReadTool()
 

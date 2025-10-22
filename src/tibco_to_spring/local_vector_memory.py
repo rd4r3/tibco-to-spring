@@ -1,20 +1,15 @@
 import sqlite3
 import faiss
 import json
-import logging
 import numpy as np
 import os
 from typing import List, Optional, Union
 from sentence_transformers import SentenceTransformer
 from crewai.memory.storage.interface import Storage
+from tibco_to_spring.logging_config import get_logger
 
 # Set up logging
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = get_logger(__name__)
 
 CREW_MEMORY_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "crew_memory.db"))
 
