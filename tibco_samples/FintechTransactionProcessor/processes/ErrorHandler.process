@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>ErrorHandler</name>
+    <description>Global error handler for transaction processing</description>
+    <activities>
+        <activity name="LogError" type="JavaMethod">
+            <method>com.fintech.ErrorLogger.log</method>
+        </activity>
+        <activity name="NotifySupport" type="Email">
+            <to>support@fintech.com</to>
+            <subject>Transaction Processing Error</subject>
+            <body>An error occurred during transaction processing: ${error.message}</body>
+        </activity>
+        <activity name="FormatErrorResponse" type="XSLTTransformation">
+            <stylesheet>errorResponse.xsl</stylesheet>
+        </activity>
+    </activities>
+</process>

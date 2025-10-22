@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.tibco.com/xmlns/repo/types/2002">
+    <name>FintechTransactionProcessor</name>
+    <description>TIBCO BW project for processing fintech transactions</description>
+    <version>1.0.0</version>
+    <dependencies>
+        <dependency>TIBCO-BW-6.5.0</dependency>
+        <dependency>TIBCO-BW-JDBC-6.5.0</dependency>
+        <dependency>TIBCO-BW-XML-6.5.0</dependency>
+    </dependencies>
+    <modules>
+        <module>processes</module>
+        <module>schemas</module>
+        <module>wsdl</module>
+        <module>resources</module>
+    </modules>
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <outputDirectory>build</outputDirectory>
+    </build>
+</project>

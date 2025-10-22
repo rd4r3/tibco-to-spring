@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+           xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+           xmlns:tns="http://fintech.com/transaction"
+           targetNamespace="http://fintech.com/transaction">
+
+    <types>
+        <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  targetNamespace="http://fintech.com/transaction">
+            <xs:import namespace="http://fintech.com/transaction"
+                      schemaLocation="../schemas/Transaction.xsd"/>
+            <xs:import namespace="http://fintech.com/transaction"
+                      schemaLocation="../schemas/EnrichedTransaction.xsd"/>
+            <xs:import namespace="http://fintech.com/transaction"
+                      schemaLocation="../schemas/ErrorPayload.xsd"/>
+        </xs:schema>
+    </types>
+
+    <message name="ProcessTransactionRequest">
+        <part name="transaction" element="tns:Transaction"/>
+    </message>
+
+    <message name="ProcessTransactionResponse">
+        <part name="enrichedTransaction" element="tns:EnrichedTransaction"/>
+    </message>
+
+    <message name="ErrorResponse">
+        <part name="error" element="tns:ErrorPayload"/>
+    </message>
+
+    <portType name="TransactionService">
+        <operation name="processTransaction">
+            <input message="tns:ProcessTransactionRequest"/>
+            <output message="tns:ProcessTransactionResponse"/>
+            <fault name="error" message="tns:ErrorResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="TransactionServiceBinding" type="tns:TransactionService">
+        <soap:binding style="document"
+                     transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="processTransaction">
+            <soap:operation soapAction="http://fintech.com/transaction/processTransaction"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="error">
+                <soap:fault name="error" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+
+    <service name="TransactionService">
+        <port name="TransactionServicePort" binding="tns:TransactionServiceBinding">
+            <soap:address location="http://localhost:8080/transactionService"/>
+        </port>
+    </service>
+
+</definitions>
