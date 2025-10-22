@@ -1,10 +1,7 @@
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import FileReadTool, DirectoryReadTool
-import json
 import os
-import re
-import uuid
 from tibco_to_spring.local_vector_memory import LocalVectorMemory
 from crewai.memory.external.external_memory import ExternalMemory
 

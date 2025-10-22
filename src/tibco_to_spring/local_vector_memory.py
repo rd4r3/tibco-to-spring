@@ -18,6 +18,7 @@ class LocalVectorMemory(Storage):
         self.index = faiss.IndexFlatL2(self.dimension)
         self.embeddings = []
         self.metadata = []
+        self._load_persistent_memory()  # Load persistent memory
 
     def _init_tables(self):
         cursor = self.conn.cursor()
@@ -85,3 +86,36 @@ class LocalVectorMemory(Storage):
         self.index.reset()
         self.embeddings.clear()
         self.metadata.clear()
+
+    def _load_persistent_memory(self):
+        """
+        Load all persisted memory items from SQLite database into memory.
+        This method:
+        1. Retrieves all memory records from the SQLite database
+        2. Rebuilds the FAISS index with all persisted embeddings
+        3. Populates the in-memory metadata list with all persisted records
+        This ensures that all previously stored memory is available for
+        both vector search and metadata queries when the application starts.
+        """
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT agent, metadata, content FROM memory")
+        rows = cursor.fetchall()
+
+        for agent, metadata_str, content in rows:
+            try:
+                metadata = json.loads(metadata_str) if metadata_str else {}
+                embedding = self.model.encode(content)
+
+                # Add to FAISS index
+                self.index.add(np.array([embedding]).astype("float32"))
+                self.embeddings.append(embedding)
+
+                # Add to metadata
+                self.metadata.append({
+                    "agent": agent,
+                    "metadata": metadata,
+                    "content": content
+                })
+            except Exception as e:
+                print(f"Error loading memory item: {e}")
+                continue

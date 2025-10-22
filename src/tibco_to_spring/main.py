@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-import json
 import os
 import sys
 import warnings
 from pathlib import Path
-from typing import Dict, Any, Union
 from tibco_to_spring.crew import TibcoToSpring
 
 # Constants
@@ -31,7 +29,7 @@ def run() -> None:
     except Exception as e:
         raise IOError(f"Error processing output: {e}")
 
-def train():
+def train() -> None:
     """
     Train the crew for a given number of iterations.
     """
