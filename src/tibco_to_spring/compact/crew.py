@@ -4,7 +4,7 @@ from crewai import Crew, Agent, Task, LLM
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 from typing import Type,Any
-
+from crewai_tools import FileReadTool, DirectoryReadTool
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
@@ -144,7 +144,9 @@ llm = LLM(
 def create_java_architect(tool):
     return Agent(
         role="Java Architect who enforces company standards",
-        goal="Ensure all generated Spring Boot code strictly follows company architecture, annotations, and logging standards",
+        goal="""Ensure all generated Spring Boot code strictly follows company architecture, 
+        annotations, and logging standards
+        """,
         backstory="""
         You are the guardian of company engineering standards. You’ve been trained on thousands of internal code examples and know exactly how controllers, services, repositories, configs, and security modules are structured. You reject anything that deviates from the company’s patterns. You enforce package structure, logging format, exception handling, and API versioning with precision.
         """,
@@ -154,22 +156,22 @@ def create_java_architect(tool):
         llm=llm
     )
 
-def create_tibco_parser():
+def create_tibco_parser(dir_tool, file_tool):
     return Agent(
-        role="TIBCO Logic Extractor",
+        role="TIBCO BusinessWorks and BusinessEvents Project Analyst",
         goal="""
         Analyze the architecture and flow of the provided TIBCO BusinessWorks and BusinessEvents project. 
         Identify all components, services, channels, and rule definitions. Examine the core business logic, 
         event-driven interactions, and integration points. Deliver a structured breakdown of each element 
-        to provide a clear and complete understanding of the system’s behavior and design.
+        to provide a clear and complete understanding of the system's behavior and design.
         """,
         backstory="""
         Specialist in dissecting and interpreting TIBCO BusinessWorks and BusinessEvents solutions. 
         Experienced in uncovering hidden dependencies, logic flows, and architectural patterns. 
         Known for delivering precise, actionable insights that support modernization, migration, and optimization efforts.
-       You extract flow definitions, service invocations, mappings, and transformation logic from process definitions and prepare them for conversion to Spring Boot.
+        You extract flow definitions, service invocations, mappings, and transformation logic from process definitions and prepare them for conversion to Spring Boot.
         """,
-        tools=[],
+        tools=[dir_tool, file_tool],
         allow_delegation=False,
         verbose=True,
         llm=llm
@@ -177,63 +179,57 @@ def create_tibco_parser():
 
 # ------------------ Tasks ------------------
 
-def create_tibco_parsing_task(agent, tibco_path):
+def create_tibco_parsing_task(agent):
     return Task(
-        description=f"""Parse the TIBCO BusinessWorks XML process files located in: {tibco_path}
-
-        Extract:
-        - Flow sequence and branching logic
-        - Service calls and endpoints
-        - Data transformation rules
-        - Exception handling paths
-
-        Output a structured summary of the process logic that can be used for Spring Boot conversion.""",
+        description=f"""
+        Perform a comprehensive analysis of the provided TIBCO BusinessEvents and TIBCO BusinessWorks projects, focusing on key architectural 
+        and functional components including: business logic, integration points, process definitions, processes and subprocesses, adapters, 
+        error handling mechanisms, logging strategies, exception handling, database connection configurations, global variables, event 
+        processing flows, preprocessors, decision tables, and rule functions. Deliver a structured breakdown of each element, explaining its 
+        role, behavior, and interdependencies. Provide actionable insights on how these components can be mapped, adapted, or re-engineered 
+        during migration to Spring Boot. Highlight considerations for preserving functional parity and mitigating migration risks.
+        Output a structured summary of the process logic that can be used for Spring Boot conversion.
+        """,
         agent=agent,
-        expected_output="Structured summary of TIBCO process logic"
+        expected_output="""
+        A detailed technical analysis documenting all relevant aspects of the TIBCO project's architecture and functionality. 
+        The output should include clear descriptions of business logic, integration points, process definitions, subprocesses, adapters, 
+        error and exception handling mechanisms, logging practices, database configurations, global variables, event processing, 
+        preprocessors, decision tables, and rule functions. Structure the analysis to serve as a migration blueprint for developing 
+        a Java Spring Boot application that replicates the original TIBCO system with high fidelity. Ensure the documentation is 
+        technically precise, migration-aware, and suitable for direct implementation reference.
+        """
     )
 
 def create_conversion_task(agent, context_provider):
     return Task(
         description=f"""Convert TIBCO BusinessWorks process to Spring Boot.
 
-        ⚠️ You must strictly follow COMPANY CODE PATTERNS — no deviations, no substitutions. These patterns are extracted directly from production repositories and represent the company's enforced standards.
+        You must strictly follow COMPANY CODE PATTERNS — no deviations, no substitutions. These patterns are extracted directly from production repositories and represent the company's enforced standards.
 
         {context_provider.get_context()}
 
-        🔧 Requirements (MANDATORY — match exactly):
+        ### Requirements:
+        - Package Structure: Use the layer-based structure from company services. Controllers go in .controller, services in .service, repositories in .repository, configs in .config. Do not invent new layers or naming conventions.
+        - Exception Handling: Implement a global exception handler using @ControllerAdvice and @ExceptionHandler. Follow the exact structure and response format shown in company examples.
+        - Logging Format: Use structured logging with placeholders, e.g. log.info("User created: {{}}", userId). Avoid System.out.println, printStackTrace, or any unstructured logging.
+        - API Versioning: Accept version headers using @RequestHeader("API-Version"). Do not use URI-based versioning or query parameters.
+        - Controllers: Annotate with @RestController, use @GetMapping, @PostMapping, and follow naming and response patterns from company code.
+        - Services: Annotate with @Service, encapsulate business logic, and follow transaction boundaries and method naming conventions.
+        - Repositories: Use @Repository and Spring Data JPA. Match entity structure, query methods, and naming from company repositories.
+        - Configuration: Use @Configuration and @Bean to define reusable components. Follow company config patterns for metrics, messaging, and security.
+        - Security: Implement SecurityFilterChain, authentication filters, and access rules exactly as shown in company security modules. Do not use default Spring Boot security.
 
-        - 🧱 Package Structure: Use the layer-based structure from company services. Controllers go in `.controller`, services in `.service`, repositories in `.repository`, configs in `.config`. Do not invent new layers or naming conventions.
-
-        - 🧯 Exception Handling: Implement a global exception handler using `@ControllerAdvice` and `@ExceptionHandler`. Follow the exact structure and response format shown in company examples.
-
-        - 📊 Logging Format: Use structured logging with placeholders, e.g. `log.info("User created: {{}}", userId)`. Avoid `System.out.println`, `printStackTrace`, or any unstructured logging.
-
-        - 🔢 API Versioning: Accept version headers using `@RequestHeader("API-Version")`. Do not use URI-based versioning or query parameters.
-
-        - 🧩 Controllers: Annotate with `@RestController`, use `@GetMapping`, `@PostMapping`, and follow naming and response patterns from company code.
-
-        - 🧩 Services: Annotate with `@Service`, encapsulate business logic, and follow transaction boundaries and method naming conventions.
-
-        - 🧩 Repositories: Use `@Repository` and Spring Data JPA. Match entity structure, query methods, and naming from company repositories.
-
-        - ⚙️ Configuration: Use `@Configuration` and `@Bean` to define reusable components. Follow company config patterns for metrics, messaging, and security.
-
-        - 🔐 Security: Implement `SecurityFilterChain`, authentication filters, and access rules exactly as shown in company security modules. Do not use default Spring Boot security.
-
-        📌 Expected Output:
-        Spring Boot code that fully complies with company architecture, annotations, logging, and structural standards. Any deviation will be rejected.
-
-        Provide a Bash script that automates project setup and compilation, including:
-
-        1. **Directory Structure**: Commands to create a clean and modular project layout.
-        2. **Maven `pom.xml`**:
+        ### Provide a Bash script that automates project setup and compilation, including:
+        1. Directory Structure: Commands to create a clean and modular project layout.
+        2. Maven `pom.xml`:
             - Include all required libraries.
-        3. **Java Codebase**:
+        3. Java Codebase:
             - REST controllers, service classes, repositories, DTOs/entities, and business logic layers.
             - Unit tests for all core components.
-        4. **Configuration Files**:
+        4. Configuration Files:
             - A default `application.properties` file with essential Spring Boot configurations.
-        5. **Build Commands**:
+        5. Build Commands:
             - Maven commands to compile and run the application.
 
         ### Bash Script Requirements:
@@ -259,14 +255,14 @@ def create_conversion_task(agent, context_provider):
 
 def create_crew(base_path="./company-repos", tibco_path="./tibco-project"):
     tool, context_provider = setup_company_knowledge_tool(base_path)
-    expert = create_java_architect(tool)
-    parser = create_tibco_parser()
+    java_architect = create_java_architect(tool)
+    tibco_parser = create_tibco_parser(DirectoryReadTool(directory=tibco_path), FileReadTool())
 
-    task_parse = create_tibco_parsing_task(parser, tibco_path)
-    task_convert = create_conversion_task(expert, context_provider)
+    task_parse = create_tibco_parsing_task(tibco_parser)
+    task_convert = create_conversion_task(java_architect, context_provider)
 
     return Crew(
-        agents=[parser, expert],
+        agents=[tibco_parser, java_architect],
         tasks=[task_parse, task_convert],
         verbose=True
     )
