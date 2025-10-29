@@ -19,7 +19,7 @@ class CompanyCodeTool(BaseTool):
     description: str = "Search company codebase for implementation examples and patterns"
     args_schema: Type[BaseModel] = CompanyCodeInput
 
-    context_provider: Any  # ✅ Declare it as a field
+    context_provider: Any
 
     def _run(self, query: str) -> str:
         return self.context_provider.get_examples(query)
@@ -219,6 +219,10 @@ def create_conversion_task(agent, context_provider):
         - Repositories: Use @Repository and Spring Data JPA. Match entity structure, query methods, and naming from company repositories.
         - Configuration: Use @Configuration and @Bean to define reusable components. Follow company config patterns for metrics, messaging, and security.
         - Security: Implement SecurityFilterChain, authentication filters, and access rules exactly as shown in company security modules. Do not use default Spring Boot security.
+        - Use Lombok to reduce boilerplate code.
+        - Follow a layered architecture aligned with SOLID principles.
+        - Include inline comments (`// TODO`) for future enhancements or clarifications.
+        - Ensure strict compliance with the original TIBCO specifications and logic.
 
         ### Provide a Bash script that automates project setup and compilation, including:
         1. Directory Structure: Commands to create a clean and modular project layout.
