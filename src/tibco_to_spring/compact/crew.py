@@ -205,11 +205,13 @@ def create_conversion_task(agent, context_provider):
     return Task(
         description=f"""Convert TIBCO BusinessWorks process to Spring Boot.
 
-        You must strictly follow COMPANY CODE PATTERNS — no deviations, no substitutions. These patterns are extracted directly from production repositories and represent the company's enforced standards.
-
+        You must strictly follow Company Code Patterns — no deviations, no substitutions. 
+        These patterns are extracted directly from production repositories and represent the company's enforced standards.
+        
+        ### Company Code Patterns
         {context_provider.get_context()}
 
-        ### Requirements:
+        ### Technical Requirements:
         - Package Structure: Use the layer-based structure from company services. Controllers go in .controller, services in .service, repositories in .repository, configs in .config. Do not invent new layers or naming conventions.
         - Exception Handling: Implement a global exception handler using @ControllerAdvice and @ExceptionHandler. Follow the exact structure and response format shown in company examples.
         - Logging Format: Use structured logging with placeholders, e.g. log.info("User created: {{}}", userId). Avoid System.out.println, printStackTrace, or any unstructured logging.
@@ -224,19 +226,18 @@ def create_conversion_task(agent, context_provider):
         - Include inline comments (`// TODO`) for future enhancements or clarifications.
         - Ensure strict compliance with the original TIBCO specifications and logic.
 
-        ### Provide a Bash script that automates project setup and compilation, including:
-        1. Directory Structure: Commands to create a clean and modular project layout.
-        2. Maven `pom.xml`:
-            - Include all required libraries.
-        3. Java Codebase:
-            - REST controllers, service classes, repositories, DTOs/entities, and business logic layers.
-            - Unit tests for all core components.
-        4. Configuration Files:
-            - A default `application.properties` file with essential Spring Boot configurations.
-        5. Build Commands:
-            - Maven commands to compile and run the application.
-
-        ### Bash Script Requirements:
+        ### Bash Script Requirements
+        - Provide a Bash script that automates project setup and compilation, including:
+            1. Directory Structure: Commands to create a clean and modular project layout.
+            2. Maven `pom.xml`:
+                - Include all required libraries.
+            3. Java Codebase:
+                - REST controllers, service classes, repositories, DTOs/entities, and business logic layers.
+                - Unit tests for all core components.
+            4. Configuration Files:
+                - A default `application.properties` file with essential Spring Boot configurations.
+            5. Build Commands:
+                - Maven commands to compile and run the application.
         - Use proper Bash syntax and handle multiline strings with `cat << 'EOF'`.
         - Ensure the generated project compiles and runs without errors.
         - Include logging to provide runtime visibility.
